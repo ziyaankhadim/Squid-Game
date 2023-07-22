@@ -41,6 +41,10 @@ window.addEventListener("resize", () => {
 // Scene
 const scene = new THREE.Scene();
 
+//Grid Helper
+const gridHelper = new THREE.GridHelper(100);
+scene.add(gridHelper);
+
 // Object
 const geometry = new THREE.BoxBufferGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({ color: parameters.color });
