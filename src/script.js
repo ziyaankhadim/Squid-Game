@@ -5,12 +5,12 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import gsap from "gsap";
 import * as dat from "dat.gui";
 
-// const parameters = {
-//   color: 0xffff00,
-//   spin: () => {
-//     gsap.to(mesh.rotation, 1, { x: mesh.rotation.x + Math.PI * 2 });
-//   },
-// };
+const parameters = {
+  color: 0xffff00,
+  //   spin: () => {
+  //     gsap.to(mesh.rotation, 1, { x: mesh.rotation.x + Math.PI * 2 });
+  //   },
+};
 
 /**
  * Base
@@ -46,11 +46,12 @@ const gridHelper = new THREE.GridHelper(100);
 scene.add(gridHelper);
 
 // Object
-// const geometry = new THREE.BoxBufferGeometry(1, 1, 1);
-// const material = new THREE.MeshBasicMaterial({ color: parameters.color });
-// const mesh = new THREE.Mesh(geometry, material);
-// scene.add(mesh);
-
+const boxGeometry = new THREE.BoxBufferGeometry(5, 5, 5);
+const boxMaterial = new THREE.MeshBasicMaterial({ color: parameters.color });
+const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+scene.add(boxMesh);
+boxMesh.position.z = 47.5;
+boxMesh.position.y = 2.5;
 // Instantiate a loader
 const gltfLoader = new GLTFLoader();
 
@@ -81,8 +82,8 @@ scene.add(light);
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
 camera.position.x = 0;
-camera.position.y = 0;
-camera.position.z = 15;
+camera.position.y = 35;
+camera.position.z = 70;
 //camera.lookAt(mesh.position);
 scene.add(camera);
 
@@ -95,7 +96,7 @@ controls.enableDamping = true;
  * Debug
  */
 const gui = new dat.GUI({
-  // closed: true,
+  closed: true,
   width: 400,
 });
 // gui.hide()
@@ -109,6 +110,78 @@ const gui = new dat.GUI({
 
 // gui.add(parameters, "spin");
 
+/**
+ * Controls
+ */
+let keys = {
+  forward: false,
+  backward: false,
+  left: false,
+  right: false,
+  space: false,
+  shift: false,
+};
+
+document.addEventListener("keydown", (event) => onKeyDown(event), false);
+document.addEventListener("keyup", (event) => onKeyUp(event), false);
+
+function onKeyDown(event) {
+  switch (event.key.toLowerCase()) {
+    case "w":
+      keys.forward = true;
+      //console.log("Keydown: w");
+      break;
+    case "a":
+      keys.left = true;
+      //console.log("Keydown: a");
+      break;
+    case "s":
+      keys.backward = true;
+      //console.log("Keydown: s");
+      break;
+    case "d":
+      keys.right = true;
+      //console.log("Keydown: d");
+      break;
+    case " ": // SPACE
+      keys.space = true;
+      //console.log("Keydown: SPACE");
+      break;
+    case "shift":
+      keys.shift = true;
+      //console.log("Keydown: SHIFT");
+      break;
+  }
+}
+
+function onKeyUp(event) {
+  switch (event.key.toLowerCase()) {
+    case "w":
+      keys.forward = false;
+      //console.log("Keyup: w");
+      break;
+    case "a":
+      keys.left = false;
+      //console.log("Keyup: a");
+      break;
+    case "s":
+      keys.backward = false;
+      //console.log("Keyup: s");
+      break;
+    case "d":
+      keys.right = false;
+      //console.log("Keyup: d");
+      break;
+    case " ": // SPACE
+      keys.space = false;
+      //console.log("Keyup: SPACE");
+      break;
+    case "shift":
+      keys.shift = false;
+      //console.log("Keyup: SHIFT");
+      break;
+  }
+}
 // Renderer
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
@@ -119,6 +192,9 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 // Animate
 const clock = new THREE.Clock();
 //console.log(clock);
+
+const movementSpeed = 0.1;
+
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   //console.log(elapsedTime);
@@ -128,6 +204,28 @@ const tick = () => {
 
   // Render
   renderer.render(scene, camera);
+
+  // Update position based on keys
+  if (keys.forward) {
+    boxMesh.position.z -= movementSpeed;
+  }
+  if (keys.backward) {
+    boxMesh.position.z += movementSpeed;
+  }
+  if (keys.left) {
+    boxMesh.position.x -= movementSpeed;
+  }
+  if (keys.right) {
+    boxMesh.position.x += movementSpeed;
+  }
+  // if (keys.space) {
+  //   boxMesh.position.y = 10;
+  // } else {
+  //   boxMesh.position.y = 0;
+  // }
+  // if (keys.shift) {
+  //   boxMesh.position.z -= movementSpeed;
+  // }
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
