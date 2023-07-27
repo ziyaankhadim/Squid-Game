@@ -52,6 +52,37 @@ const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
 scene.add(boxMesh);
 boxMesh.position.z = 47.5;
 boxMesh.position.y = 2.5;
+
+// Line
+const lineStart = new THREE.Vector3(-50, 0, -40);
+const lineEnd = new THREE.Vector3(50, 0, -40);
+const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+  lineStart,
+  lineEnd,
+]);
+const lineMaterial = new THREE.LineBasicMaterial({
+  color: 0xff0000,
+  //linewidth: 10,
+});
+const line = new THREE.Line(lineGeometry, lineMaterial);
+scene.add(line);
+
+// Raycaster
+const raycaster = new THREE.Raycaster();
+const rayDirection = new THREE.Vector3(0, -1, 0); // Customize the direction based on your scene setup
+
+// Intersection Check
+const lineBox = new THREE.Box3(
+  new THREE.Vector3(-50, -0, -0),
+  new THREE.Vector3(50, 0, 0)
+);
+
+// Visualization
+// const lineBoxHelper = new THREE.Box3Helper(lineBox, 0x00ff00);
+// scene.add(lineBoxHelper);
+
+console.log(lineBox);
+
 // Instantiate a loader
 const gltfLoader = new GLTFLoader();
 
@@ -193,7 +224,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 const clock = new THREE.Clock();
 //console.log(clock);
 
-const movementSpeed = 0.1;
+const movementSpeed = 0.5;
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
@@ -224,9 +255,19 @@ const tick = () => {
   //   boxMesh.position.y = 0;
   // }
   // if (keys.shift) {
-  //   boxMesh.position.z -= movementSpeed;
+  //   boxMesh.position.z -= movementSpeed * 2;
   // }
 
+  // Update the raycaster origin based on the box's position
+  raycaster.set(boxMesh.position, rayDirection);
+
+  // Check if the ray intersects the line
+  const intersects = raycaster.intersectObject(line);
+  //console.log(intersects);
+
+  if (intersects.length > 0) {
+    console.log("Box crossed the line!");
+  }
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
 
