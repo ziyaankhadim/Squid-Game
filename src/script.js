@@ -11,7 +11,17 @@ const parameters = {
   //     gsap.to(mesh.rotation, 1, { x: mesh.rotation.x + Math.PI * 2 });
   //   },
 };
+let scene, renderer, camera, stats;
+let model, skeleton, mixer;
 
+const crossFadeControls = [];
+
+let idleAction, walkAction, runAction;
+let idleWeight, walkWeight, runWeight;
+let actions, settings;
+
+let singleStepMode = false;
+let sizeOfNextStep = 0;
 /**
  * Base
  */
@@ -39,7 +49,7 @@ window.addEventListener("resize", () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 // Scene
-const scene = new THREE.Scene();
+scene = new THREE.Scene();
 
 //Grid Helper
 const gridHelper = new THREE.GridHelper(100);
@@ -81,7 +91,7 @@ const lineBox = new THREE.Box3(
 // const lineBoxHelper = new THREE.Box3Helper(lineBox, 0x00ff00);
 // scene.add(lineBoxHelper);
 
-console.log(lineBox);
+//console.log(lineBox);
 
 // Instantiate a loader
 const gltfLoader = new GLTFLoader();
@@ -89,13 +99,35 @@ const gltfLoader = new GLTFLoader();
 // Load a glTF resource
 gltfLoader.load(
   // resource URL
-  "/doll/scene.gltf",
+  "/Soldier.glb",
   // called when the resource is loaded
   function (gltf) {
     console.log(gltf);
-    gltf.scene.scale.set(1, 1, 1);
-    gltf.scene.position.set(0, 4.75, -45);
+    gltf.scene.scale.set(10, 10, 10);
+    gltf.scene.position.set(0, 4.75, 50);
+    model = gltf.scene;
+    // model.traverse(function (object) {
+    //   if (object.isMesh) object.castShadow = true;
+    // });
+    const animations = gltf.animations;
+
+    mixer = new THREE.AnimationMixer(model);
+
+    // Set the time scale for the mixer to make the animation play faster (e.g., 2.0 for double speed)
+    //mixer.timeScale = 100.0;
+
+    idleAction = mixer.clipAction(animations[0]);
+    walkAction = mixer.clipAction(animations[3]);
+    runAction = mixer.clipAction(animations[1]);
+
+    //console.log(walkAction);
+
+    actions = [idleAction, walkAction, runAction];
+    //idleAction.play();
+    walkAction.play();
+    //runAction.play();
     scene.add(gltf.scene);
+    tick();
   },
   //called while loading is progressing
   function (xhr) {
@@ -111,7 +143,7 @@ gltfLoader.load(
 const light = new THREE.AmbientLight(0xffffff); // soft white light
 scene.add(light);
 // Camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
+camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
 camera.position.x = 0;
 camera.position.y = 35;
 camera.position.z = 70;
@@ -214,7 +246,7 @@ function onKeyUp(event) {
   }
 }
 // Renderer
-const renderer = new THREE.WebGLRenderer({
+renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
 renderer.setSize(sizes.width, sizes.height);
@@ -222,19 +254,18 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 // Animate
 const clock = new THREE.Clock();
+console.log(clock);
+
 //console.log(clock);
 
 const movementSpeed = 0.5;
 
 const tick = () => {
-  const elapsedTime = clock.getElapsedTime();
+  //const elapsedTime = clock.getElapsedTime();
   //console.log(elapsedTime);
 
   // Update objects
   //mesh.rotation.y = elapsedTime;
-
-  // Render
-  renderer.render(scene, camera);
 
   // Update position based on keys
   if (keys.forward) {
@@ -269,10 +300,19 @@ const tick = () => {
     console.log("Box crossed the line!");
   }
   // Call tick again on the next frame
-  window.requestAnimationFrame(tick);
+  requestAnimationFrame(tick);
 
   // required if controls.enableDamping or controls.autoRotate are set to true
   controls.update();
+
+  // if (model && mixer) {
+  // Update the animation mixer only when both 'model' and 'mixer' are defined
+  const mixerUpdateDelta = clock.getDelta();
+  mixer.update(mixerUpdateDelta);
+  // }
+
+  // Render
+  renderer.render(scene, camera);
 };
 
-tick();
+//tick();
