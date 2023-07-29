@@ -112,6 +112,7 @@ gltfLoader.load(
     const animations = gltf.animations;
 
     mixer = new THREE.AnimationMixer(model);
+    console.log(mixer);
 
     // Set the time scale for the mixer to make the animation play faster (e.g., 2.0 for double speed)
     //mixer.timeScale = 100.0;
@@ -124,7 +125,7 @@ gltfLoader.load(
 
     actions = [idleAction, walkAction, runAction];
     //idleAction.play();
-    walkAction.play();
+    //walkAction.play();
     //runAction.play();
     scene.add(gltf.scene);
     tick();
@@ -258,27 +259,113 @@ console.log(clock);
 
 //console.log(clock);
 
-const movementSpeed = 0.5;
+let movementSpeed = 0.1;
 
+let mixerUpdated = false; // Add a flag to track if mixer.update has been called
+let rotationAngle = 0; // Variable to store the desired rotation angle
+let angle = Math.PI;
+let currentRotationAngle = 0;
 const tick = () => {
   //const elapsedTime = clock.getElapsedTime();
+  const mixerUpdateDelta = clock.getDelta();
   //console.log(elapsedTime);
 
   // Update objects
   //mesh.rotation.y = elapsedTime;
 
   // Update position based on keys
+  rotationAngle = 0; // Reset the rotation angle for each frame
+
+  // Update position based on keys
+
+  // Check if Shift is pressed to determine if the character is running
+  const isRunning =
+    keys.shift && (keys.forward || keys.backward || keys.left || keys.right);
+  const isWalking = keys.forward || keys.backward || keys.left || keys.right;
+
+  if (isRunning) {
+    walkAction.setEffectiveTimeScale(1.0);
+    //mixer.stopAllAction();
+    movementSpeed = 0.2;
+    runAction.play();
+    walkAction.stop();
+    idleAction.stop();
+    mixerUpdated = true; // Adjust the animation speed for running
+  } else if (isWalking) {
+    walkAction.setEffectiveTimeScale(1.0);
+    //mixer.stopAllAction();
+    walkAction.play();
+    runAction.stop();
+    idleAction.stop();
+    mixerUpdated = true; // Reset the animation speed for walking
+  } else {
+    //mixer.stopAllAction();
+    idleAction.play();
+    rotationAngle = currentRotationAngle;
+    walkAction.stop();
+    runAction.stop();
+    mixerUpdated = true;
+  }
+
   if (keys.forward) {
+    //walkAction.play();
+    //mixerUpdated = true;
+    //model.rotation.set(0, 0, 0);
+    model.position.z -= movementSpeed;
     boxMesh.position.z -= movementSpeed;
+    // Calculate the rotation angle based on the direction of movement
+    if (keys.left) {
+      rotationAngle += angle / -8; // Rotate -90 degrees if moving backward and left
+    } else if (keys.right) {
+      rotationAngle += angle / 8; // Rotate 90 degrees if moving backward and right
+    } else {
+      rotationAngle += angle * 2; // Rotate 180 degrees if moving backward without any lateral movement
+    }
+    //rotationAngle += angle * (keys.left ? -0.25 : 2);
+    //rotationAngle += angle * (keys.right ? 0.25 : 2);
   }
   if (keys.backward) {
+    //walkAction.play();
+    //mixerUpdated = true;
+    //model.rotation.set(0, Math.PI, 0);
+    model.position.z += movementSpeed;
     boxMesh.position.z += movementSpeed;
+    // Calculate the rotation angle based on the direction of movement
+    if (keys.left) {
+      rotationAngle += angle / 4; // Rotate -90 degrees if moving backward and left
+    } else if (keys.right) {
+      rotationAngle += angle / -4; // Rotate 90 degrees if moving backward and right
+    } else {
+      rotationAngle += angle; // Rotate 180 degrees if moving backward without any lateral movement
+    }
+    //rotationAngle += angle * (keys.left ? -0.75 : 1);
+    //rotationAngle += angle * (keys.right ? 0.75 : 1); // Rotate 180 degrees if moving backward
   }
   if (keys.left) {
+    //walkAction.play();
+    //mixerUpdated = true;
+    model.rotation.set(0, Math.PI / 2, 0);
+    model.position.x -= movementSpeed;
     boxMesh.position.x -= movementSpeed;
+    rotationAngle += Math.PI / 2; // Rotate 90 degrees if moving left
   }
   if (keys.right) {
+    //walkAction.play();
+    //mixerUpdated = true;
+    model.rotation.set(0, -Math.PI / 2, 0);
+    model.position.x += movementSpeed;
     boxMesh.position.x += movementSpeed;
+    rotationAngle -= Math.PI / 2; // Rotate -90 degrees if moving right
+  }
+
+  // Apply the accumulated rotationAngle to the model
+  model.rotation.set(0, rotationAngle, 0);
+  // Save the current rotationAngle to be used when keys are released
+  currentRotationAngle = rotationAngle;
+
+  if (mixerUpdated) {
+    mixer.update(mixerUpdateDelta); // Call mixer.update only once if any key is pressed
+    mixerUpdated = false; // Reset the flag for the next frame
   }
   // if (keys.space) {
   //   boxMesh.position.y = 10;
@@ -307,8 +394,7 @@ const tick = () => {
 
   // if (model && mixer) {
   // Update the animation mixer only when both 'model' and 'mixer' are defined
-  const mixerUpdateDelta = clock.getDelta();
-  mixer.update(mixerUpdateDelta);
+  //mixer.update(mixerUpdateDelta);
   // }
 
   // Render
