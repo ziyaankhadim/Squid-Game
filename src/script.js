@@ -13,7 +13,7 @@ const parameters = {
 };
 let scene, renderer, camera, stats;
 let model, skeleton, mixer;
-
+let dollFacingBack = false;
 const crossFadeControls = [];
 
 let idleAction, walkAction, runAction;
@@ -95,7 +95,67 @@ const lineBox = new THREE.Box3(
 
 // Instantiate a loader
 const gltfLoader = new GLTFLoader();
+let doll;
+// Load a glTF resource
+gltfLoader.load(
+  // resource URL
+  "/doll/scene.gltf",
+  // called when the resource is loaded
+  function (gltf) {
+    console.log(gltf);
+    doll = gltf.scene;
+    gltf.scene.scale.set(1, 1, 1);
+    gltf.scene.position.set(0, 4.75, -45);
+    scene.add(gltf.scene);
+    //lookBackward();
+    //setTimeout(lookForward, 1000);
+    startDoll();
+  },
+  //called while loading is progressing
+  function (xhr) {
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+  },
+  //called when loading has errors
+  function (error) {
+    console.log("An error happened");
+  }
+);
 
+function lookBackward() {
+  if (doll) {
+    // Check if the 3D model has finished loading
+    gsap.to(doll.rotation, { duration: 0.5, y: -3.15 });
+    setTimeout(() => (dollFacingBack = true), 150);
+    // } else {
+    //   console.warn('Doll model not loaded yet!');
+  }
+}
+
+function lookForward() {
+  if (doll) {
+    // Check if the 3D model has finished loading
+    gsap.to(doll.rotation, { duration: 0.5, y: 0 });
+    setTimeout(() => (dollFacingBack = false), 450);
+    // } else {
+    //   console.warn('Doll model not loaded yet!');
+  }
+}
+async function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+async function startDoll() {
+  lookBackward();
+  await delay(Math.random() * 2500 + 1000);
+  //console.log(dollFacingBack);
+
+  lookForward();
+  await delay(Math.random() * 1000 + 750);
+  //console.log(dollFacingBack);
+
+  startDoll();
+}
+//lookBackward();
+//lookForward();
 // Load a glTF resource
 gltfLoader.load(
   // resource URL
@@ -284,7 +344,10 @@ const tick = () => {
   const isWalking = keys.forward || keys.backward || keys.left || keys.right;
 
   if (isRunning) {
-    walkAction.setEffectiveTimeScale(1.0);
+    if (!dollFacingBack) {
+      console.log("you lose");
+    }
+    //walkAction.setEffectiveTimeScale(1.0);
     //mixer.stopAllAction();
     movementSpeed = 0.2;
     runAction.play();
@@ -292,6 +355,9 @@ const tick = () => {
     idleAction.stop();
     mixerUpdated = true; // Adjust the animation speed for running
   } else if (isWalking) {
+    if (!dollFacingBack) {
+      console.log("you lose");
+    }
     walkAction.setEffectiveTimeScale(1.0);
     //mixer.stopAllAction();
     walkAction.play();
@@ -385,7 +451,7 @@ const tick = () => {
   //console.log(intersects);
 
   if (intersects.length > 0) {
-    console.log("Soldier Crossed line");
+    console.log("You Win");
   }
   // Call tick again on the next frame
   requestAnimationFrame(tick);
