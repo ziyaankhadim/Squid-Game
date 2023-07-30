@@ -55,13 +55,13 @@ scene = new THREE.Scene();
 const gridHelper = new THREE.GridHelper(100);
 scene.add(gridHelper);
 
-// Object
-const boxGeometry = new THREE.BoxBufferGeometry(5, 5, 5);
-const boxMaterial = new THREE.MeshBasicMaterial({ color: parameters.color });
-const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
-scene.add(boxMesh);
-boxMesh.position.z = 47.5;
-boxMesh.position.y = 2.5;
+// // Object
+// const boxGeometry = new THREE.BoxBufferGeometry(5, 5, 5);
+// // const boxMaterial = new THREE.MeshBasicMaterial({ color: parameters.color });
+// const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+// scene.add(boxMesh);
+// boxMesh.position.z = 47.5;
+// boxMesh.position.y = 2.5;
 
 // Line
 const lineStart = new THREE.Vector3(-50, 0, -40);
@@ -104,7 +104,7 @@ gltfLoader.load(
   function (gltf) {
     console.log(gltf);
     gltf.scene.scale.set(10, 10, 10);
-    gltf.scene.position.set(0, 4.75, 50);
+    gltf.scene.position.set(0, 0, 50);
     model = gltf.scene;
     // model.traverse(function (object) {
     //   if (object.isMesh) object.castShadow = true;
@@ -312,7 +312,7 @@ const tick = () => {
     //mixerUpdated = true;
     //model.rotation.set(0, 0, 0);
     model.position.z -= movementSpeed;
-    boxMesh.position.z -= movementSpeed;
+    //boxMesh.position.z -= movementSpeed;
     // Calculate the rotation angle based on the direction of movement
     if (keys.left) {
       rotationAngle += angle / -8; // Rotate -90 degrees if moving backward and left
@@ -329,7 +329,7 @@ const tick = () => {
     //mixerUpdated = true;
     //model.rotation.set(0, Math.PI, 0);
     model.position.z += movementSpeed;
-    boxMesh.position.z += movementSpeed;
+    //boxMesh.position.z += movementSpeed;
     // Calculate the rotation angle based on the direction of movement
     if (keys.left) {
       rotationAngle += angle / 4; // Rotate -90 degrees if moving backward and left
@@ -346,7 +346,7 @@ const tick = () => {
     //mixerUpdated = true;
     model.rotation.set(0, Math.PI / 2, 0);
     model.position.x -= movementSpeed;
-    boxMesh.position.x -= movementSpeed;
+    //boxMesh.position.x -= movementSpeed;
     rotationAngle += Math.PI / 2; // Rotate 90 degrees if moving left
   }
   if (keys.right) {
@@ -354,7 +354,7 @@ const tick = () => {
     //mixerUpdated = true;
     model.rotation.set(0, -Math.PI / 2, 0);
     model.position.x += movementSpeed;
-    boxMesh.position.x += movementSpeed;
+    //boxMesh.position.x += movementSpeed;
     rotationAngle -= Math.PI / 2; // Rotate -90 degrees if moving right
   }
 
@@ -377,14 +377,15 @@ const tick = () => {
   // }
 
   // Update the raycaster origin based on the box's position
-  raycaster.set(boxMesh.position, rayDirection);
+  //raycaster.set(boxMesh.position, rayDirection);
+  raycaster.set(model.position, rayDirection);
 
   // Check if the ray intersects the line
   const intersects = raycaster.intersectObject(line);
   //console.log(intersects);
 
   if (intersects.length > 0) {
-    console.log("Box crossed the line!");
+    console.log("Soldier Crossed line");
   }
   // Call tick again on the next frame
   requestAnimationFrame(tick);
