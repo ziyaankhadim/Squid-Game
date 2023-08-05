@@ -2,6 +2,7 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/Orbitcontrols.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import gsap from "gsap";
 import * as dat from "dat.gui";
 
@@ -210,6 +211,7 @@ const lineBox = new THREE.Box3(
 
 // Instantiate a loader
 const gltfLoader = new GLTFLoader();
+//DOLL
 let doll;
 // Load a glTF resource
 gltfLoader.load(
@@ -272,6 +274,7 @@ async function startDoll() {
 //lookBackward();
 //lookForward();
 // Load a glTF resource
+//Soldier
 gltfLoader.load(
   // resource URL
   "/Soldier.glb",
@@ -314,6 +317,152 @@ gltfLoader.load(
     console.log("An error happened");
   }
 );
+// let idleAction1;
+// let walkAction1;
+// let mixer1;
+// let mixer2;
+// //Player
+// const fbxLoader = new FBXLoader();
+// const idleLoader = fbxLoader;
+// //loader.setPath("./resources/zombie/");
+// idleLoader.load("/Player/Idle (1).fbx", (fbx) => {
+//   console.log(fbx);
+//   fbx.scale.setScalar(10);
+//   fbx.traverse((c) => {
+//     c.castShadow = true;
+//   });
+//   const animations = fbx.animations;
+//   mixer1 = new THREE.AnimationMixer(fbx);
+//   idleAction1 = mixer1.clipAction(animations[0]);
+//   idleAction1.play();
+//   scene.add(fbx);
+// });
+// const walkLoader = fbxLoader;
+// //loader.setPath("./resources/zombie/");
+// walkLoader.load("/Player/Walking.fbx", (walk) => {
+//   console.log(walk);
+//   walk.scale.setScalar(10);
+//   walk.traverse((c) => {
+//     c.castShadow = true;
+//   });
+//   const animations = walk.animations;
+//   mixer2 = new THREE.AnimationMixer(walk);
+//   walkAction1 = mixer2.clipAction(animations[0]);
+//   walkAction1.play();
+//   scene.add(walk);
+// });
+//Player
+let mixer1;
+let model1;
+let modelReady = false;
+const animationActions = [];
+let activeAction;
+let lastAction;
+const fbxLoader = new FBXLoader();
+fbxLoader.load(
+  "/Player/Idle (1).fbx",
+  (object) => {
+    object.scale.set(10, 10, 10);
+    object.position.set(10, 0, 50);
+    //object.rotation.y = Math.PI;
+    mixer1 = new THREE.AnimationMixer(object);
+    const animationAction = mixer1.clipAction(object.animations[0]);
+    animationActions.push(animationAction);
+    //animationsFolder.add(animations, "default");
+    activeAction = animationActions[0];
+    activeAction.play();
+    model1 = object;
+    scene.add(object);
+
+    fbxLoader.load(
+      "/Player/Walking.fbx",
+      (object) => {
+        console.log("loaded walk");
+
+        const animationAction = mixer1.clipAction(object.animations[0]);
+        animationActions.push(animationAction);
+        //animationsFolder.add(animations, "samba");
+
+        fbxLoader.load(
+          "/Player/Running.fbx",
+          (object) => {
+            console.log("loaded run");
+            const animationAction = mixer1.clipAction(object.animations[0]);
+            animationActions.push(animationAction);
+            //animationsFolder.add(animations, "bellydance");
+
+            fbxLoader.load(
+              "/Player/Victory.fbx",
+              (object) => {
+                console.log("loaded victory");
+                //object.animations[0].tracks.shift();
+                const animationAction = mixer1.clipAction(object.animations[0]);
+                animationActions.push(animationAction);
+                //animationsFolder.add(animations, "goofyrunning");
+
+                fbxLoader.load(
+                  "/Player/Zombie Dying.fbx",
+                  (object) => {
+                    console.log("loaded dead");
+                    //object.animations[0].tracks.shift();
+                    const animationAction = mixer1.clipAction(
+                      object.animations[0]
+                    );
+                    animationActions.push(animationAction);
+                    //animationsFolder.add(animations, "goofyrunning");
+
+                    modelReady = true;
+                  },
+                  (xhr) => {
+                    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+                  },
+                  (error) => {
+                    console.log(error);
+                  }
+                );
+                modelReady = true;
+              },
+              (xhr) => {
+                console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+              },
+              (error) => {
+                console.log(error);
+              }
+            );
+          },
+          (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
+      },
+      (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  },
+  (xhr) => {
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+  },
+  (error) => {
+    console.log(error);
+  }
+);
+const setAction = (toAction) => {
+  if (toAction !== activeAction) {
+    lastAction = activeAction;
+    activeAction = toAction;
+    lastAction.fadeOut(0.3);
+    activeAction.reset();
+    activeAction.fadeIn(0.3);
+    activeAction.play();
+  }
+};
 
 //Lights
 const light = new THREE.AmbientLight(0xffffff); // soft white light
@@ -456,8 +605,10 @@ let movementSpeed = 0.1;
 
 let mixerUpdated = false; // Add a flag to track if mixer.update has been called
 let rotationAngle = 0; // Variable to store the desired rotation angle
+let rotationAngle1 = Math.PI; // Variable to store the desired rotation angle
 let angle = Math.PI;
 let currentRotationAngle = 0;
+let currentRotationAngle1 = Math.PI;
 const tick = () => {
   //const elapsedTime = clock.getElapsedTime();
   const mixerUpdateDelta = clock.getDelta();
@@ -468,6 +619,7 @@ const tick = () => {
 
   // Update position based on keys
   rotationAngle = 0; // Reset the rotation angle for each frame
+  rotationAngle1 = Math.PI; // Reset the rotation angle for each frame
 
   // Update position based on keys
 
@@ -482,6 +634,7 @@ const tick = () => {
     }
     //walkAction.setEffectiveTimeScale(1.0);
     //mixer.stopAllAction();
+    setAction(animationActions[2]);
     movementSpeed = 0.2;
     runAction.play();
     walkAction.stop();
@@ -491,6 +644,7 @@ const tick = () => {
     if (!dollFacingBack) {
       console.log("you lose");
     }
+    setAction(animationActions[1]);
     walkAction.setEffectiveTimeScale(1.0);
     //mixer.stopAllAction();
     walkAction.play();
@@ -499,8 +653,12 @@ const tick = () => {
     mixerUpdated = true; // Reset the animation speed for walking
   } else {
     //mixer.stopAllAction();
+    setAction(animationActions[0]);
     idleAction.play();
     rotationAngle = currentRotationAngle;
+    //rotationAngle = currentRotationAngle1;
+    //rotationAngle1 = currentRotationAngle;
+    rotationAngle1 = currentRotationAngle1;
     walkAction.stop();
     runAction.stop();
     mixerUpdated = true;
@@ -511,61 +669,90 @@ const tick = () => {
     //mixerUpdated = true;
     //model.rotation.set(0, 0, 0);
     model.position.z -= movementSpeed;
+    model1.position.z -= movementSpeed;
     //boxMesh.position.z -= movementSpeed;
     // Calculate the rotation angle based on the direction of movement
     if (keys.left) {
       rotationAngle += angle / -8; // Rotate -90 degrees if moving backward and left
+      rotationAngle1 += angle / -8; // Rotate -90 degrees if moving backward and left
     } else if (keys.right) {
       rotationAngle += angle / 8; // Rotate 90 degrees if moving backward and right
+      rotationAngle1 += angle / 8; // Rotate 90 degrees if moving backward and right
     } else {
       rotationAngle += angle * 2; // Rotate 180 degrees if moving backward without any lateral movement
+      rotationAngle1 += angle * 2; // Rotate 180 degrees if moving backward without any lateral movement
     }
     //rotationAngle += angle * (keys.left ? -0.25 : 2);
+    //rotationAngle1 += angle * (keys.left ? -0.25 : 2);
     //rotationAngle += angle * (keys.right ? 0.25 : 2);
+    //rotationAngle1 += angle * (keys.right ? 0.25 : 2);
   }
   if (keys.backward) {
     //walkAction.play();
     //mixerUpdated = true;
     //model.rotation.set(0, Math.PI, 0);
     model.position.z += movementSpeed;
+    model1.position.z += movementSpeed;
     //boxMesh.position.z += movementSpeed;
     // Calculate the rotation angle based on the direction of movement
     if (keys.left) {
       rotationAngle += angle / 4; // Rotate -90 degrees if moving backward and left
+      rotationAngle1 += angle / 4; // Rotate -90 degrees if moving backward and left
     } else if (keys.right) {
       rotationAngle += angle / -4; // Rotate 90 degrees if moving backward and right
+      rotationAngle1 += angle / -4; // Rotate 90 degrees if moving backward and right
     } else {
       rotationAngle += angle; // Rotate 180 degrees if moving backward without any lateral movement
+      rotationAngle1 += angle; // Rotate 180 degrees if moving backward without any lateral movement
     }
     //rotationAngle += angle * (keys.left ? -0.75 : 1);
+    //rotationAngle1 += angle * (keys.left ? -0.75 : 1);
     //rotationAngle += angle * (keys.right ? 0.75 : 1); // Rotate 180 degrees if moving backward
+    //rotationAngle1 += angle * (keys.right ? 0.75 : 1); // Rotate 180 degrees if moving backward
   }
   if (keys.left) {
     //walkAction.play();
     //mixerUpdated = true;
     model.rotation.set(0, Math.PI / 2, 0);
     model.position.x -= movementSpeed;
+    model1.rotation.set(0, Math.PI / 2, 0);
+    model1.position.x -= movementSpeed;
     //boxMesh.position.x -= movementSpeed;
     rotationAngle += Math.PI / 2; // Rotate 90 degrees if moving left
+    rotationAngle1 += Math.PI / 2; // Rotate 90 degrees if moving left
   }
   if (keys.right) {
     //walkAction.play();
     //mixerUpdated = true;
     model.rotation.set(0, -Math.PI / 2, 0);
     model.position.x += movementSpeed;
+    model1.rotation.set(0, -Math.PI / 2, 0);
+    model1.position.x += movementSpeed;
     //boxMesh.position.x += movementSpeed;
     rotationAngle -= Math.PI / 2; // Rotate -90 degrees if moving right
+    rotationAngle1 -= Math.PI / 2; // Rotate -90 degrees if moving right
   }
 
   // Apply the accumulated rotationAngle to the model
+  // Apply the accumulated rotationAngle1 to the model
   model.rotation.set(0, rotationAngle, 0);
+  //model.rotation.set(0, rotationAngle1, 0);
+  //model1.rotation.set(0, rotationAngle, 0);
+  model1.rotation.set(0, rotationAngle1, 0);
   // Save the current rotationAngle to be used when keys are released
+  // Save the current rotationAngle1 to be used when keys are released
   currentRotationAngle = rotationAngle;
+  //currentRotationAngle1 = rotationAngle;
+  //currentRotationAngle = rotationAngle1;
+  currentRotationAngle1 = rotationAngle1;
 
   if (mixerUpdated) {
     mixer.update(mixerUpdateDelta); // Call mixer.update only once if any key is pressed
+    mixer1.update(mixerUpdateDelta);
     mixerUpdated = false; // Reset the flag for the next frame
   }
+  //mixer2.update(mixerUpdateDelta);
+
   // if (keys.space) {
   //   boxMesh.position.y = 10;
   // } else {
