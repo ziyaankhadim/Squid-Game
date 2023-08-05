@@ -19,6 +19,7 @@ const crossFadeControls = [];
 let idleAction, walkAction, runAction;
 let idleWeight, walkWeight, runWeight;
 let actions, settings;
+let textureRandom;
 
 let singleStepMode = false;
 let sizeOfNextStep = 0;
@@ -53,7 +54,121 @@ scene = new THREE.Scene();
 
 //Grid Helper
 const gridHelper = new THREE.GridHelper(100);
-scene.add(gridHelper);
+//scene.add(gridHelper);
+
+/**
+ * Textures
+ */
+const loadingManager = new THREE.LoadingManager();
+loadingManager.onStart = () => {
+  console.log("loadingManager: loading started");
+};
+loadingManager.onLoaded = () => {
+  console.log("loadingManager: loading finished");
+};
+loadingManager.onProgress = () => {
+  console.log("loadingManager: loading progressing");
+};
+loadingManager.onError = () => {
+  console.log("loadingManager: loading error");
+};
+
+const textureLoader = new THREE.TextureLoader(loadingManager);
+
+// const colorTexture = textureLoader.load('/textures/checkerboard-1024x1024.png')
+// const colorTexture = textureLoader.load('/textures/checkerboard-2x2.png')
+const colorTexture = textureLoader.load(
+  "/Dirt/dirt_floor_diff_1k.jpg",
+  () => {
+    console.log("textureLoader: loading finished");
+  },
+  () => {
+    console.log("textureLoader: loading progressing");
+  },
+  () => {
+    console.log("textureLoader: loading error");
+  }
+);
+textureRandom = Math.random() * 10 + 1;
+// colorTexture.wrapS = THREE.MirroredRepeatWrapping;
+// colorTexture.wrapT = THREE.MirroredRepeatWrapping;
+// colorTexture.repeat.x = random;
+// colorTexture.repeat.y = random;
+//colorTexture.offset.x = 0.5;
+//colorTexture.offset.y = 0.5;
+// colorTexture.rotation = Math.PI * 0.25
+// colorTexture.center.x = 0.5
+// colorTexture.center.y = 0.5
+// colorTexture.generateMipmaps = false;
+//colorTexture.minFilter = THREE.NearestFilter;
+//colorTexture.magFilter = THREE.NearestFilter;
+
+// const aoTexture = textureLoader.load("/Sand 002/Sand 002_OCC.jpg");
+// const heightTexture = textureLoader.load("/Sand 002/Sand 002_DISP.png");
+// const normalTexture = textureLoader.load("/Sand 002/Sand 002_NRM.jpg");
+// // const ambientOcclusionTexture = textureLoader.load(
+// //   "/textures/door/ambientOcclusion.jpg"
+// // );
+// const metalnessTexture = textureLoader.load("/Sand 002/Sand 002_SPEC.jpg");
+// //const roughnessTexture = textureLoader.load("/textures/door/roughness.jpg");
+const aoTexture = textureLoader.load("/Dirt/dirt_floor_ao_1k.jpg");
+const heightTexture = textureLoader.load("/Dirt/dirt_floor_disp_1k.png");
+//const normalTexture = textureLoader.load("/Dirt/dirt_floor_nor_gl_1k.jpg");
+//const normalTexture = textureLoader.load("/Dirt/dirt_floor_nor_dx_1k.jpg");
+// const ambientOcclusionTexture = textureLoader.load(
+//   "/textures/door/ambientOcclusion.jpg"
+// );
+//const metalnessTexture = textureLoader.load("/Sand 002/Sand 002_SPEC.jpg");
+//const roughnessTexture = textureLoader.load("/Dirt/dirt_floor_rough_1k.jpg");
+//const alphaTexture = textureLoader.load("/Dirt/dirt_floor_arm_1k.jpg");
+
+// Floor
+const floorMaterial = new THREE.MeshStandardMaterial();
+let floorGeometry = new THREE.PlaneBufferGeometry(100, 100, 100, 100);
+// After creating the floorGeometry, compute the face normals and vertex normals
+const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+floor.geometry.setAttribute(
+  "uv2",
+  new THREE.BufferAttribute(floor.geometry.attributes.uv.array, 2)
+);
+floorMaterial.side = THREE.DoubleSide;
+floorGeometry.computeFaceNormals();
+floorGeometry.computeVertexNormals();
+floorMaterial.map = colorTexture;
+//floorMaterial.alphaMap = alphaTexture;
+//console.log(floorMaterial);
+aoTexture.wrapS = THREE.MirroredRepeatWrapping;
+aoTexture.wrapT = THREE.MirroredRepeatWrapping;
+aoTexture.repeat.x = textureRandom;
+aoTexture.repeat.y = textureRandom;
+floorMaterial.aoMap = aoTexture;
+floorMaterial.aoMapIntensity = 2;
+//floorMaterial.normalMap = normalTexture;
+// normalTexture.wrapS = THREE.MirroredRepeatWrapping;
+// normalTexture.wrapT = THREE.MirroredRepeatWrapping;
+// normalTexture.repeat.x = random;
+// normalTexture.repeat.y = random;
+// console.log(floorMaterial);
+floorMaterial.color = new THREE.Color(0xffffff);
+floorMaterial.displacementMap = heightTexture;
+//floorMaterial.roughnessMap = roughnessTexture;
+//roughnessTexture.wrapS = THREE.MirroredRepeatWrapping;
+//roughnessTexture.wrapT = THREE.MirroredRepeatWrapping;
+//roughnessTexture.repeat.x = random;
+//roughnessTexture.repeat.y = random;
+//floorMaterial.roughness = 5;
+//floorMaterial.metalness = 0;
+//floorMaterial.normalMap = normalTexture;
+//floorMaterial.normalScale.set(1000, 1000);
+floorMaterial.displacementScale = 2;
+heightTexture.wrapS = THREE.MirroredRepeatWrapping;
+heightTexture.wrapT = THREE.MirroredRepeatWrapping;
+heightTexture.repeat.x = textureRandom;
+heightTexture.repeat.y = textureRandom;
+floor.rotation.x = -Math.PI * 0.5;
+floor.position.y = -1;
+
+scene.add(floor);
 
 // // Object
 // const boxGeometry = new THREE.BoxBufferGeometry(5, 5, 5);
@@ -64,8 +179,8 @@ scene.add(gridHelper);
 // boxMesh.position.y = 2.5;
 
 // Line
-const lineStart = new THREE.Vector3(-50, 0, -40);
-const lineEnd = new THREE.Vector3(50, 0, -40);
+const lineStart = new THREE.Vector3(-50, 0.2, -40);
+const lineEnd = new THREE.Vector3(50, 0.2, -40);
 const lineGeometry = new THREE.BufferGeometry().setFromPoints([
   lineStart,
   lineEnd,
@@ -220,13 +335,31 @@ controls.enableDamping = true;
  * Debug
  */
 const gui = new dat.GUI({
-  closed: true,
+  closed: false,
   width: 400,
 });
+
+// gui
+//   .add(floorGeometry.parameters, "widthSegments")
+//   .min(0)
+//   .max(1000)
+//   .step(0.0001);
+// gui
+//   .add(floorGeometry.parameters, "heightSegments")
+//   .min(0)
+//   .max(1000)
+//   .step(0.0001);
+//gui.add(floorMaterial, "aoMapIntensity").min(0).max(100).step(0.0001);
+//gui.add(floorMaterial, "displacementScale").min(0).max(100).step(0.0001);
+//gui.add(floorMaterial, "metalness").min(0).max(100).step(0.0001);
+//gui.add(floorMaterial.normalScale, "y").min(0).max(100).step(0.0001);
+//gui.add(floorMaterial.normalScale, "x").min(0).max(100).step(0.0001);
+//gui.add(floorMaterial, "color").min(0).max(100).step(0.0001);
+//gui.add(floorMaterial, "roughness").min(0).max(100).step(0.0001);
 // gui.hide()
 //gui.add(mesh.position, "y").min(-3).max(3).step(0.01).name("elevation");
 //gui.add(mesh, "visible");
-//gui.add(material, "wireframe");
+//gui.add(floorMaterial, "wireframe");
 
 // gui.addColor(parameters, "color").onChange(() => {
 //   material.color.set(parameters.color);
