@@ -60,6 +60,7 @@ const gridHelper = new THREE.GridHelper(100);
 /**
  * Textures
  */
+textureRandom = Math.random() * 10 + 1;
 const loadingManager = new THREE.LoadingManager();
 loadingManager.onStart = () => {
   console.log("loadingManager: loading started");
@@ -90,19 +91,6 @@ const colorTexture = textureLoader.load(
     console.log("textureLoader: loading error");
   }
 );
-textureRandom = Math.random() * 10 + 1;
-// colorTexture.wrapS = THREE.MirroredRepeatWrapping;
-// colorTexture.wrapT = THREE.MirroredRepeatWrapping;
-// colorTexture.repeat.x = random;
-// colorTexture.repeat.y = random;
-//colorTexture.offset.x = 0.5;
-//colorTexture.offset.y = 0.5;
-// colorTexture.rotation = Math.PI * 0.25
-// colorTexture.center.x = 0.5
-// colorTexture.center.y = 0.5
-// colorTexture.generateMipmaps = false;
-//colorTexture.minFilter = THREE.NearestFilter;
-//colorTexture.magFilter = THREE.NearestFilter;
 
 // const aoTexture = textureLoader.load("/Sand 002/Sand 002_OCC.jpg");
 // const heightTexture = textureLoader.load("/Sand 002/Sand 002_DISP.png");
@@ -125,7 +113,7 @@ const heightTexture = textureLoader.load("/Dirt/dirt_floor_disp_1k.png");
 
 // Floor
 const floorMaterial = new THREE.MeshStandardMaterial();
-let floorGeometry = new THREE.PlaneBufferGeometry(100, 100, 100, 100);
+const floorGeometry = new THREE.PlaneBufferGeometry(100, 100, 100, 100);
 // After creating the floorGeometry, compute the face normals and vertex normals
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 floor.geometry.setAttribute(
@@ -135,6 +123,18 @@ floor.geometry.setAttribute(
 floorMaterial.side = THREE.DoubleSide;
 floorGeometry.computeFaceNormals();
 floorGeometry.computeVertexNormals();
+colorTexture.wrapS = THREE.MirroredRepeatWrapping;
+colorTexture.wrapT = THREE.MirroredRepeatWrapping;
+colorTexture.repeat.x = Math.random() * 5 + 1;
+colorTexture.repeat.y = Math.random() * 5 + 1;
+colorTexture.offset.x = 0.5;
+colorTexture.offset.y = 0.5;
+colorTexture.rotation = Math.PI * 0.25;
+colorTexture.center.x = 0.5;
+colorTexture.center.y = 0.5;
+// colorTexture.generateMipmaps = false;
+//colorTexture.minFilter = THREE.NearestFilter;
+//colorTexture.magFilter = THREE.NearestFilter;
 floorMaterial.map = colorTexture;
 //floorMaterial.alphaMap = alphaTexture;
 //console.log(floorMaterial);
@@ -143,7 +143,7 @@ aoTexture.wrapT = THREE.MirroredRepeatWrapping;
 aoTexture.repeat.x = textureRandom;
 aoTexture.repeat.y = textureRandom;
 floorMaterial.aoMap = aoTexture;
-floorMaterial.aoMapIntensity = 2;
+floorMaterial.aoMapIntensity = 1.5;
 //floorMaterial.normalMap = normalTexture;
 // normalTexture.wrapS = THREE.MirroredRepeatWrapping;
 // normalTexture.wrapT = THREE.MirroredRepeatWrapping;
@@ -170,6 +170,47 @@ floor.rotation.x = -Math.PI * 0.5;
 floor.position.y = -1;
 
 scene.add(floor);
+
+//Side Walls
+const wallTexture = textureLoader.load(
+  "/background/sideWall.png",
+  () => {
+    console.log("textureLoader: loading finished");
+  },
+  () => {
+    console.log("textureLoader: loading progressing");
+  },
+  () => {
+    console.log("textureLoader: loading error");
+  }
+);
+const wallMaterial = new THREE.MeshStandardMaterial();
+const wallGeometry = new THREE.PlaneBufferGeometry(100, 50, 100, 100);
+const rightWall = new THREE.Mesh(wallGeometry, wallMaterial);
+// wall.geometry.setAttribute(
+//   "uv2",
+//   new THREE.BufferAttribute(wall.geometry.attributes.uv.array, 2)
+// );
+rightWall.side = THREE.DoubleSide;
+wallTexture.wrapS = THREE.MirroredRepeatWrapping;
+wallTexture.wrapT = THREE.MirroredRepeatWrapping;
+wallTexture.repeat.x = 2;
+wallTexture.repeat.y = 1;
+wallMaterial.map = wallTexture;
+rightWall.rotation.x = Math.PI;
+rightWall.rotation.y = -Math.PI / 2;
+rightWall.rotation.z = -Math.PI;
+rightWall.position.x = 49.8;
+rightWall.position.y = 50 / 2;
+scene.add(rightWall);
+const leftWall = rightWall.clone();
+//console.log(`left wall ${leftWall}`);
+leftWall.rotation.x = Math.PI;
+leftWall.rotation.y = Math.PI / 2;
+leftWall.rotation.z = -Math.PI;
+leftWall.position.x = -49.8;
+leftWall.position.y = 50 / 2;
+scene.add(leftWall);
 
 // // Object
 // const boxGeometry = new THREE.BoxBufferGeometry(5, 5, 5);
