@@ -191,7 +191,7 @@ const rightWall = new THREE.Mesh(wallGeometry, wallMaterial);
 //   "uv2",
 //   new THREE.BufferAttribute(wall.geometry.attributes.uv.array, 2)
 // );
-rightWall.side = THREE.DoubleSide;
+//wallMaterial.side = THREE.DoubleSide;
 wallTexture.wrapS = THREE.MirroredRepeatWrapping;
 wallTexture.wrapT = THREE.MirroredRepeatWrapping;
 wallTexture.repeat.x = 2;
@@ -212,6 +212,35 @@ leftWall.position.x = -49.8;
 leftWall.position.y = 50 / 2;
 scene.add(leftWall);
 
+//Front Wall
+const frontWallTexture = textureLoader.load(
+  "/background/frontWallFullTrim.png",
+  () => {
+    console.log("textureLoader: loading finished");
+  },
+  () => {
+    console.log("textureLoader: loading progressing");
+  },
+  () => {
+    console.log("textureLoader: loading error");
+  }
+);
+const frontWallMaterial = new THREE.MeshStandardMaterial();
+const frontWallGeometry = new THREE.PlaneBufferGeometry(100, 50, 100, 100);
+const frontWall = new THREE.Mesh(frontWallGeometry, frontWallMaterial);
+//frontWallMaterial.side = THREE.DoubleSide;
+frontWallTexture.wrapS = THREE.MirroredRepeatWrapping;
+frontWallTexture.wrapT = THREE.MirroredRepeatWrapping;
+frontWallTexture.repeat.x = 1;
+frontWallTexture.repeat.y = 1;
+frontWallMaterial.map = frontWallTexture;
+frontWall.rotation.x = 0;
+frontWall.rotation.y = 0;
+frontWall.rotation.z = 0;
+frontWall.position.x = 0;
+frontWall.position.y = 50 / 2;
+frontWall.position.z = -49.8;
+scene.add(frontWall);
 // // Object
 // const boxGeometry = new THREE.BoxBufferGeometry(5, 5, 5);
 // // const boxMaterial = new THREE.MeshBasicMaterial({ color: parameters.color });
