@@ -26,6 +26,9 @@ let textureRandom;
 
 let singleStepMode = false;
 let sizeOfNextStep = 0;
+
+let won = false;
+let lost = false;
 /**
  * Base
  */
@@ -433,8 +436,11 @@ async function startDoll() {
   await delay(Math.random() * 1000 + 750);
   //console.log(dollFacingBack);
 
-  startDoll();
+  if (!won && !lost) {
+    startDoll();
+  }
 }
+
 //lookBackward();
 //lookForward();
 // Load a glTF resource
@@ -824,128 +830,146 @@ const tick = () => {
   const isWalking = keys.forward || keys.backward || keys.left || keys.right;
   const bothWS = keys.forward && keys.backward;
   const bothAD = keys.left && keys.right;
-  if (isRunning && !bothWS && !bothAD) {
-    if (!dollFacingBack) {
-      console.log("you lose");
+  if (!won && !lost) {
+    if (isRunning && !bothWS && !bothAD) {
+      if (!dollFacingBack) {
+        lost = true;
+        console.log("you lose");
+      }
+      //walkAction.setEffectiveTimeScale(1.0);
+      //mixer.stopAllAction();
+      setAction(animationActions[2]);
+      movementSpeed = 0.2;
+      runAction.play();
+      walkAction.stop();
+      idleAction.stop();
+      mixerUpdated = true; // Adjust the animation speed for running
+    } else if (isWalking && !bothWS && !bothAD) {
+      if (!dollFacingBack) {
+        lost = true;
+        console.log("you lose");
+      }
+      setAction(animationActions[1]);
+      walkAction.setEffectiveTimeScale(1.0);
+      //mixer.stopAllAction();
+      walkAction.play();
+      runAction.stop();
+      idleAction.stop();
+      mixerUpdated = true; // Reset the animation speed for walking
+    } else {
+      //mixer.stopAllAction();
+      setAction(animationActions[0]);
+      idleAction.play();
+      rotationAngle = currentRotationAngle;
+      //rotationAngle = currentRotationAngle1;
+      //rotationAngle1 = currentRotationAngle;
+      rotationAngle1 = currentRotationAngle1;
+      walkAction.stop();
+      runAction.stop();
+      mixerUpdated = true;
     }
-    //walkAction.setEffectiveTimeScale(1.0);
-    //mixer.stopAllAction();
-    setAction(animationActions[2]);
-    movementSpeed = 0.2;
-    runAction.play();
-    walkAction.stop();
-    idleAction.stop();
-    mixerUpdated = true; // Adjust the animation speed for running
-  } else if (isWalking && !bothWS && !bothAD) {
-    if (!dollFacingBack) {
-      console.log("you lose");
+    if (keys.forward && !bothWS && !bothAD) {
+      //walkAction.play();
+      //mixerUpdated = true;
+      //model.rotation.set(0, 0, 0);
+      model.position.z -= movementSpeed;
+      model1.position.z -= movementSpeed;
+      camera.position.z -= movementSpeed;
+      //boxMesh.position.z -= movementSpeed;
+      // Calculate the rotation angle based on the direction of movement
+      if (keys.left) {
+        rotationAngle += angle / -8; // Rotate -90 degrees if moving backward and left
+        rotationAngle1 += angle / -8; // Rotate -90 degrees if moving backward and left
+      } else if (keys.right) {
+        rotationAngle += angle / 8; // Rotate 90 degrees if moving backward and right
+        rotationAngle1 += angle / 8; // Rotate 90 degrees if moving backward and right
+      } else {
+        rotationAngle += angle * 2; // Rotate 180 degrees if moving backward without any lateral movement
+        rotationAngle1 += angle * 2; // Rotate 180 degrees if moving backward without any lateral movement
+      }
+      //rotationAngle += angle * (keys.left ? -0.25 : 2);
+      //rotationAngle1 += angle * (keys.left ? -0.25 : 2);
+      //rotationAngle += angle * (keys.right ? 0.25 : 2);
+      //rotationAngle1 += angle * (keys.right ? 0.25 : 2);
     }
-    setAction(animationActions[1]);
-    walkAction.setEffectiveTimeScale(1.0);
-    //mixer.stopAllAction();
-    walkAction.play();
-    runAction.stop();
-    idleAction.stop();
-    mixerUpdated = true; // Reset the animation speed for walking
-  } else {
-    //mixer.stopAllAction();
-    setAction(animationActions[0]);
-    idleAction.play();
-    rotationAngle = currentRotationAngle;
-    //rotationAngle = currentRotationAngle1;
-    //rotationAngle1 = currentRotationAngle;
-    rotationAngle1 = currentRotationAngle1;
-    walkAction.stop();
-    runAction.stop();
+    if (keys.backward && !bothWS && !bothAD) {
+      //walkAction.play();
+      //mixerUpdated = true;
+      //model.rotation.set(0, Math.PI, 0);
+      model.position.z += movementSpeed;
+      model1.position.z += movementSpeed;
+      camera.position.z += movementSpeed;
+      //boxMesh.position.z += movementSpeed;
+      // Calculate the rotation angle based on the direction of movement
+      if (keys.left) {
+        rotationAngle += angle / 4; // Rotate -90 degrees if moving backward and left
+        rotationAngle1 += angle / 4; // Rotate -90 degrees if moving backward and left
+      } else if (keys.right) {
+        rotationAngle += angle / -4; // Rotate 90 degrees if moving backward and right
+        rotationAngle1 += angle / -4; // Rotate 90 degrees if moving backward and right
+      } else {
+        rotationAngle += angle; // Rotate 180 degrees if moving backward without any lateral movement
+        rotationAngle1 += angle; // Rotate 180 degrees if moving backward without any lateral movement
+      }
+      //rotationAngle += angle * (keys.left ? -0.75 : 1);
+      //rotationAngle1 += angle * (keys.left ? -0.75 : 1);
+      //rotationAngle += angle * (keys.right ? 0.75 : 1); // Rotate 180 degrees if moving backward
+      //rotationAngle1 += angle * (keys.right ? 0.75 : 1); // Rotate 180 degrees if moving backward
+    }
+    if (keys.left && !bothWS && !bothAD) {
+      //walkAction.play();
+      //mixerUpdated = true;
+      model.rotation.set(0, Math.PI / 2, 0);
+      model.position.x -= movementSpeed;
+      model1.rotation.set(0, Math.PI / 2, 0);
+      model1.position.x -= movementSpeed;
+      //boxMesh.position.x -= movementSpeed;
+      rotationAngle += Math.PI / 2; // Rotate 90 degrees if moving left
+      rotationAngle1 += Math.PI / 2; // Rotate 90 degrees if moving left
+      camera.position.x -= movementSpeed;
+    }
+    if (keys.right && !bothWS && !bothAD) {
+      //walkAction.play();
+      //mixerUpdated = true;
+      model.rotation.set(0, -Math.PI / 2, 0);
+      model.position.x += movementSpeed;
+      model1.rotation.set(0, -Math.PI / 2, 0);
+      model1.position.x += movementSpeed;
+      //boxMesh.position.x += movementSpeed;
+      rotationAngle -= Math.PI / 2; // Rotate -90 degrees if moving right
+      rotationAngle1 -= Math.PI / 2; // Rotate -90 degrees if moving right
+      camera.position.x += movementSpeed;
+    }
+
+    // Apply the accumulated rotationAngle to the model
+    // Apply the accumulated rotationAngle1 to the model
+    model.rotation.set(0, rotationAngle, 0);
+    //model.rotation.set(0, rotationAngle1, 0);
+    //model1.rotation.set(0, rotationAngle, 0);
+    model1.rotation.set(0, rotationAngle1, 0);
+    // Save the current rotationAngle to be used when keys are released
+    // Save the current rotationAngle1 to be used when keys are released
+    currentRotationAngle = rotationAngle;
+    //currentRotationAngle1 = rotationAngle;
+    //currentRotationAngle = rotationAngle1;
+    currentRotationAngle1 = rotationAngle1;
+  }
+  if (lost) {
+    setAction(animationActions[4]);
+    //animationActions[4].reset();
+    animationActions[4].setLoop(THREE.LoopOnce);
+    animationActions[4].clampWhenFinished = true;
+    animationActions[4].enable = true;
     mixerUpdated = true;
   }
-
-  if (keys.forward && !bothWS && !bothAD) {
-    //walkAction.play();
-    //mixerUpdated = true;
-    //model.rotation.set(0, 0, 0);
-    model.position.z -= movementSpeed;
-    model1.position.z -= movementSpeed;
-    camera.position.z -= movementSpeed;
-    //boxMesh.position.z -= movementSpeed;
-    // Calculate the rotation angle based on the direction of movement
-    if (keys.left) {
-      rotationAngle += angle / -8; // Rotate -90 degrees if moving backward and left
-      rotationAngle1 += angle / -8; // Rotate -90 degrees if moving backward and left
-    } else if (keys.right) {
-      rotationAngle += angle / 8; // Rotate 90 degrees if moving backward and right
-      rotationAngle1 += angle / 8; // Rotate 90 degrees if moving backward and right
-    } else {
-      rotationAngle += angle * 2; // Rotate 180 degrees if moving backward without any lateral movement
-      rotationAngle1 += angle * 2; // Rotate 180 degrees if moving backward without any lateral movement
-    }
-    //rotationAngle += angle * (keys.left ? -0.25 : 2);
-    //rotationAngle1 += angle * (keys.left ? -0.25 : 2);
-    //rotationAngle += angle * (keys.right ? 0.25 : 2);
-    //rotationAngle1 += angle * (keys.right ? 0.25 : 2);
+  if (won) {
+    setAction(animationActions[3]);
+    //animationActions[4].reset();
+    animationActions[3].setLoop(THREE.LoopOnce);
+    animationActions[3].clampWhenFinished = true;
+    animationActions[3].enable = true;
+    mixerUpdated = true;
   }
-  if (keys.backward && !bothWS && !bothAD) {
-    //walkAction.play();
-    //mixerUpdated = true;
-    //model.rotation.set(0, Math.PI, 0);
-    model.position.z += movementSpeed;
-    model1.position.z += movementSpeed;
-    camera.position.z += movementSpeed;
-    //boxMesh.position.z += movementSpeed;
-    // Calculate the rotation angle based on the direction of movement
-    if (keys.left) {
-      rotationAngle += angle / 4; // Rotate -90 degrees if moving backward and left
-      rotationAngle1 += angle / 4; // Rotate -90 degrees if moving backward and left
-    } else if (keys.right) {
-      rotationAngle += angle / -4; // Rotate 90 degrees if moving backward and right
-      rotationAngle1 += angle / -4; // Rotate 90 degrees if moving backward and right
-    } else {
-      rotationAngle += angle; // Rotate 180 degrees if moving backward without any lateral movement
-      rotationAngle1 += angle; // Rotate 180 degrees if moving backward without any lateral movement
-    }
-    //rotationAngle += angle * (keys.left ? -0.75 : 1);
-    //rotationAngle1 += angle * (keys.left ? -0.75 : 1);
-    //rotationAngle += angle * (keys.right ? 0.75 : 1); // Rotate 180 degrees if moving backward
-    //rotationAngle1 += angle * (keys.right ? 0.75 : 1); // Rotate 180 degrees if moving backward
-  }
-  if (keys.left && !bothWS && !bothAD) {
-    //walkAction.play();
-    //mixerUpdated = true;
-    model.rotation.set(0, Math.PI / 2, 0);
-    model.position.x -= movementSpeed;
-    model1.rotation.set(0, Math.PI / 2, 0);
-    model1.position.x -= movementSpeed;
-    //boxMesh.position.x -= movementSpeed;
-    rotationAngle += Math.PI / 2; // Rotate 90 degrees if moving left
-    rotationAngle1 += Math.PI / 2; // Rotate 90 degrees if moving left
-    camera.position.x -= movementSpeed;
-  }
-  if (keys.right && !bothWS && !bothAD) {
-    //walkAction.play();
-    //mixerUpdated = true;
-    model.rotation.set(0, -Math.PI / 2, 0);
-    model.position.x += movementSpeed;
-    model1.rotation.set(0, -Math.PI / 2, 0);
-    model1.position.x += movementSpeed;
-    //boxMesh.position.x += movementSpeed;
-    rotationAngle -= Math.PI / 2; // Rotate -90 degrees if moving right
-    rotationAngle1 -= Math.PI / 2; // Rotate -90 degrees if moving right
-    camera.position.x += movementSpeed;
-  }
-
-  // Apply the accumulated rotationAngle to the model
-  // Apply the accumulated rotationAngle1 to the model
-  model.rotation.set(0, rotationAngle, 0);
-  //model.rotation.set(0, rotationAngle1, 0);
-  //model1.rotation.set(0, rotationAngle, 0);
-  model1.rotation.set(0, rotationAngle1, 0);
-  // Save the current rotationAngle to be used when keys are released
-  // Save the current rotationAngle1 to be used when keys are released
-  currentRotationAngle = rotationAngle;
-  //currentRotationAngle1 = rotationAngle;
-  //currentRotationAngle = rotationAngle1;
-  currentRotationAngle1 = rotationAngle1;
-
   if (mixerUpdated) {
     mixer.update(mixerUpdateDelta); // Call mixer.update only once if any key is pressed
     mixer1.update(mixerUpdateDelta);
@@ -970,7 +994,9 @@ const tick = () => {
   const intersects = raycaster.intersectObject(line);
   //console.log(intersects);
 
-  if (intersects.length > 0) {
+  if (intersects.length > 0 && !won) {
+    won = true;
+    model1.rotation.set(0, 0, 0);
     console.log("You Win");
   }
   // Call tick again on the next frame
@@ -989,3 +1015,4 @@ const tick = () => {
 };
 
 //tick();
+//const myTimeout = setTimeout(tick, 2000);
