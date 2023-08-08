@@ -3,6 +3,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/Orbitcontrols.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
+//import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
+//import { Sky } from 'three/examples/jsm/objects/Sky';
 import gsap from "gsap";
 import * as dat from "dat.gui";
 
@@ -50,9 +52,20 @@ window.addEventListener("resize", () => {
   //renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
+
+// //RGBE LOADER
+// const rgbeLoader = new RGBELoader();
+// rgbeLoader.load("/bell_park_dawn_4k.hdr", function (texture) {
+//   texture.mapping = THREE.EquirectangularReflectionMapping;
+
+//   scene.background = texture;
+//   //scene.environment = texture;
+// });
+
 // Scene
 scene = new THREE.Scene();
-
+scene.background = new THREE.Color(0xadcbea); //.setHSL(0.6, 0, 1);
+scene.fog = new THREE.Fog(scene.background, 1, 5000);
 //Grid Helper
 const gridHelper = new THREE.GridHelper(100);
 //scene.add(gridHelper);
@@ -169,7 +182,6 @@ heightTexture.repeat.y = textureRandom;
 floor.rotation.x = -Math.PI * 0.5;
 floor.position.y = -1;
 floor.position.z = 50;
-
 scene.add(floor);
 
 //Side Walls
@@ -216,7 +228,7 @@ scene.add(leftWall);
 
 //Front Wall
 const frontWallTexture = textureLoader.load(
-  "/background/frontWallFullTrim.png",
+  "/background/FrontFNF.png",
   () => {
     console.log("textureLoader: loading finished");
   },
