@@ -335,6 +335,32 @@ gltfLoader.load(
   }
 );
 
+//Guards
+let guards;
+gltfLoader.load(
+  // resource URL
+  "/Guards/scene.gltf",
+  // called when the resource is loaded
+  function (gltf) {
+    console.log(gltf);
+    guards = gltf.scene;
+    guards.scale.set(7.5, 7.5, 7.5);
+    guards.position.set(20, 0.5, -60);
+    scene.add(guards);
+    let guardsClone = guards.clone();
+    guardsClone.position.set(-20, 0.5, -60);
+    scene.add(guardsClone);
+  },
+  //called while loading is progressing
+  function (xhr) {
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+  },
+  //called when loading has errors
+  function (error) {
+    console.log("An error happened");
+  }
+);
+
 //DOLL
 let doll;
 // Load a glTF resource
