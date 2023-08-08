@@ -4,7 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/Orbitcontrols.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 //import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
-//import { Sky } from 'three/examples/jsm/objects/Sky';
+import { Sky } from "three/examples/jsm/objects/Sky";
 import gsap from "gsap";
 import * as dat from "dat.gui";
 
@@ -641,7 +641,7 @@ scene.add(camera);
 
 //Orbit Controls
 //const controls = new OrbitControls(camera, canvas);
-//controls.enable = false;
+//ontrols.enable = false;
 //controls.enableDamping = true;
 
 /**
@@ -759,6 +759,38 @@ renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height);
 //renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+// Add Sky
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1;
+let sky, sun;
+sky = new Sky();
+sky.scale.setScalar(10000);
+scene.add(sky);
+
+sun = new THREE.Vector3();
+
+let turbidity = 10;
+let rayleigh = 3;
+let mieCoefficient = 0.01;
+let mieDirectionalG = 0.99;
+let elevation = 90 / 4;
+let azimuth = 180 / 3;
+let exposure = renderer.toneMappingExposure;
+const uniforms = sky.material.uniforms;
+uniforms["turbidity"].value = turbidity;
+uniforms["rayleigh"].value = rayleigh;
+uniforms["mieCoefficient"].value = mieCoefficient;
+uniforms["mieDirectionalG"].value = mieDirectionalG;
+renderer.toneMappingExposure = exposure;
+
+const phi = THREE.MathUtils.degToRad(90 - elevation);
+const theta = THREE.MathUtils.degToRad(azimuth);
+
+sun.setFromSphericalCoords(1, phi, theta);
+
+uniforms["sunPosition"].value.copy(sun);
+
 // Animate
 const clock = new THREE.Clock();
 console.log(clock);
