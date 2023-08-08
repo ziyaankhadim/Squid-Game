@@ -243,6 +243,36 @@ frontWall.position.x = 0;
 frontWall.position.y = 50 / 2;
 frontWall.position.z = -74.5;
 scene.add(frontWall);
+
+//Back Wall
+const backWallTexture = textureLoader.load(
+  "/background/backWallFullEditedTrim.png",
+  () => {
+    console.log("textureLoader: loading finished");
+  },
+  () => {
+    console.log("textureLoader: loading progressing");
+  },
+  () => {
+    console.log("textureLoader: loading error");
+  }
+);
+const backWallMaterial = new THREE.MeshStandardMaterial();
+const backWallGeometry = new THREE.PlaneBufferGeometry(100, 50, 100, 100);
+const backWall = new THREE.Mesh(backWallGeometry, backWallMaterial);
+//backWallMaterial.side = THREE.DoubleSide;
+backWallTexture.wrapS = THREE.MirroredRepeatWrapping;
+backWallTexture.wrapT = THREE.MirroredRepeatWrapping;
+backWallTexture.repeat.x = 1;
+backWallTexture.repeat.y = 1;
+backWallMaterial.map = backWallTexture;
+backWall.rotation.x = 0;
+backWall.rotation.y = Math.PI;
+backWall.rotation.z = 0;
+backWall.position.x = 0;
+backWall.position.y = 50 / 2;
+backWall.position.z = 174.5;
+scene.add(backWall);
 // // Object
 // const boxGeometry = new THREE.BoxBufferGeometry(5, 5, 5);
 // // const boxMaterial = new THREE.MeshBasicMaterial({ color: parameters.color });
