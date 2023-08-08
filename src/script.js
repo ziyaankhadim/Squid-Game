@@ -323,6 +323,7 @@ gltfLoader.load(
     // tree = gltf.scene;
     gltf.scene.scale.set(0.1, 0.1, 0.1);
     gltf.scene.position.set(0, 1, -60);
+    gltf.scene.rotation.y = Math.PI / 4;
     scene.add(gltf.scene);
   },
   //called while loading is progressing
@@ -337,6 +338,7 @@ gltfLoader.load(
 
 //Guards
 let guards;
+let guardsClone;
 gltfLoader.load(
   // resource URL
   "/Guards/scene.gltf",
@@ -347,7 +349,7 @@ gltfLoader.load(
     guards.scale.set(7.5, 7.5, 7.5);
     guards.position.set(20, 0.5, -60);
     scene.add(guards);
-    let guardsClone = guards.clone();
+    guardsClone = guards.clone();
     guardsClone.position.set(-20, 0.5, -60);
     scene.add(guardsClone);
   },
@@ -371,8 +373,8 @@ gltfLoader.load(
   function (gltf) {
     console.log(gltf);
     doll = gltf.scene;
-    gltf.scene.scale.set(1, 1, 1);
-    gltf.scene.position.set(0, 4.75, -45);
+    gltf.scene.scale.set(2, 2, 2);
+    gltf.scene.position.set(0, 4.75 * 2, -45);
     scene.add(gltf.scene);
     //lookBackward();
     //setTimeout(lookForward, 1000);
@@ -431,7 +433,7 @@ gltfLoader.load(
   // called when the resource is loaded
   function (gltf) {
     console.log(gltf);
-    gltf.scene.scale.set(10, 10, 10);
+    gltf.scene.scale.set(5, 5, 5);
     gltf.scene.position.set(0, 0, 165);
     model = gltf.scene;
     // model.traverse(function (object) {
@@ -455,7 +457,7 @@ gltfLoader.load(
     //idleAction.play();
     //walkAction.play();
     //runAction.play();
-    scene.add(gltf.scene);
+    //scene.add(gltf.scene);
     tick();
   },
   //called while loading is progressing
@@ -512,8 +514,8 @@ const fbxLoader = new FBXLoader();
 fbxLoader.load(
   "/Player/Idle (1).fbx",
   (object) => {
-    object.scale.set(10, 10, 10);
-    object.position.set(10, 0, 165);
+    object.scale.set(5, 5, 5);
+    object.position.set(0, 0, 165);
     //object.rotation.y = Math.PI;
     mixer1 = new THREE.AnimationMixer(object);
     const animationAction = mixer1.clipAction(object.animations[0]);
@@ -620,15 +622,15 @@ scene.add(light);
 // Camera
 camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
 camera.position.x = 0;
-camera.position.y = 35;
-camera.position.z = 70;
+camera.position.y = 10;
+camera.position.z = 185;
 //camera.lookAt(mesh.position);
 scene.add(camera);
 
 //Orbit Controls
-const controls = new OrbitControls(camera, canvas);
-controls.enable = false;
-controls.enableDamping = true;
+//const controls = new OrbitControls(camera, canvas);
+//controls.enable = false;
+//controls.enableDamping = true;
 
 /**
  * Debug
@@ -752,7 +754,6 @@ console.log(clock);
 //console.log(clock);
 
 let movementSpeed = 0.1;
-
 let mixerUpdated = false; // Add a flag to track if mixer.update has been called
 let rotationAngle = 0; // Variable to store the desired rotation angle
 let rotationAngle1 = Math.PI; // Variable to store the desired rotation angle
@@ -777,8 +778,9 @@ const tick = () => {
   const isRunning =
     keys.shift && (keys.forward || keys.backward || keys.left || keys.right);
   const isWalking = keys.forward || keys.backward || keys.left || keys.right;
-
-  if (isRunning) {
+  const bothWS = keys.forward && keys.backward;
+  const bothAD = keys.left && keys.right;
+  if (isRunning && !bothWS && !bothAD) {
     if (!dollFacingBack) {
       console.log("you lose");
     }
@@ -790,7 +792,7 @@ const tick = () => {
     walkAction.stop();
     idleAction.stop();
     mixerUpdated = true; // Adjust the animation speed for running
-  } else if (isWalking) {
+  } else if (isWalking && !bothWS && !bothAD) {
     if (!dollFacingBack) {
       console.log("you lose");
     }
@@ -814,12 +816,13 @@ const tick = () => {
     mixerUpdated = true;
   }
 
-  if (keys.forward) {
+  if (keys.forward && !bothWS && !bothAD) {
     //walkAction.play();
     //mixerUpdated = true;
     //model.rotation.set(0, 0, 0);
     model.position.z -= movementSpeed;
     model1.position.z -= movementSpeed;
+    camera.position.z -= movementSpeed;
     //boxMesh.position.z -= movementSpeed;
     // Calculate the rotation angle based on the direction of movement
     if (keys.left) {
@@ -837,12 +840,13 @@ const tick = () => {
     //rotationAngle += angle * (keys.right ? 0.25 : 2);
     //rotationAngle1 += angle * (keys.right ? 0.25 : 2);
   }
-  if (keys.backward) {
+  if (keys.backward && !bothWS && !bothAD) {
     //walkAction.play();
     //mixerUpdated = true;
     //model.rotation.set(0, Math.PI, 0);
     model.position.z += movementSpeed;
     model1.position.z += movementSpeed;
+    camera.position.z += movementSpeed;
     //boxMesh.position.z += movementSpeed;
     // Calculate the rotation angle based on the direction of movement
     if (keys.left) {
@@ -860,7 +864,7 @@ const tick = () => {
     //rotationAngle += angle * (keys.right ? 0.75 : 1); // Rotate 180 degrees if moving backward
     //rotationAngle1 += angle * (keys.right ? 0.75 : 1); // Rotate 180 degrees if moving backward
   }
-  if (keys.left) {
+  if (keys.left && !bothWS && !bothAD) {
     //walkAction.play();
     //mixerUpdated = true;
     model.rotation.set(0, Math.PI / 2, 0);
@@ -870,8 +874,9 @@ const tick = () => {
     //boxMesh.position.x -= movementSpeed;
     rotationAngle += Math.PI / 2; // Rotate 90 degrees if moving left
     rotationAngle1 += Math.PI / 2; // Rotate 90 degrees if moving left
+    camera.position.x -= movementSpeed;
   }
-  if (keys.right) {
+  if (keys.right && !bothWS && !bothAD) {
     //walkAction.play();
     //mixerUpdated = true;
     model.rotation.set(0, -Math.PI / 2, 0);
@@ -881,6 +886,7 @@ const tick = () => {
     //boxMesh.position.x += movementSpeed;
     rotationAngle -= Math.PI / 2; // Rotate -90 degrees if moving right
     rotationAngle1 -= Math.PI / 2; // Rotate -90 degrees if moving right
+    camera.position.x += movementSpeed;
   }
 
   // Apply the accumulated rotationAngle to the model
@@ -927,7 +933,7 @@ const tick = () => {
   requestAnimationFrame(tick);
 
   // required if controls.enableDamping or controls.autoRotate are set to true
-  controls.update();
+  //controls.update();
 
   // if (model && mixer) {
   // Update the animation mixer only when both 'model' and 'mixer' are defined
