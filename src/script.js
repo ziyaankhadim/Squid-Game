@@ -113,7 +113,7 @@ const heightTexture = textureLoader.load("/Dirt/dirt_floor_disp_1k.png");
 
 // Floor
 const floorMaterial = new THREE.MeshStandardMaterial();
-const floorGeometry = new THREE.PlaneBufferGeometry(100, 100, 100, 100);
+const floorGeometry = new THREE.PlaneBufferGeometry(100, 250, 100, 100);
 // After creating the floorGeometry, compute the face normals and vertex normals
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 floor.geometry.setAttribute(
@@ -125,8 +125,8 @@ floorGeometry.computeFaceNormals();
 floorGeometry.computeVertexNormals();
 colorTexture.wrapS = THREE.MirroredRepeatWrapping;
 colorTexture.wrapT = THREE.MirroredRepeatWrapping;
-colorTexture.repeat.x = Math.random() * 5 + 1;
-colorTexture.repeat.y = Math.random() * 5 + 1;
+colorTexture.repeat.x = Math.random() * 10 + 2;
+colorTexture.repeat.y = Math.random() * 10 + 2;
 colorTexture.offset.x = 0.5;
 colorTexture.offset.y = 0.5;
 colorTexture.rotation = Math.PI * 0.25;
@@ -168,6 +168,7 @@ heightTexture.repeat.x = textureRandom;
 heightTexture.repeat.y = textureRandom;
 floor.rotation.x = -Math.PI * 0.5;
 floor.position.y = -1;
+floor.position.z = 50;
 
 scene.add(floor);
 
@@ -185,7 +186,7 @@ const wallTexture = textureLoader.load(
   }
 );
 const wallMaterial = new THREE.MeshStandardMaterial();
-const wallGeometry = new THREE.PlaneBufferGeometry(100, 50, 100, 100);
+const wallGeometry = new THREE.PlaneBufferGeometry(250, 50, 100, 100);
 const rightWall = new THREE.Mesh(wallGeometry, wallMaterial);
 // wall.geometry.setAttribute(
 //   "uv2",
@@ -194,21 +195,22 @@ const rightWall = new THREE.Mesh(wallGeometry, wallMaterial);
 //wallMaterial.side = THREE.DoubleSide;
 wallTexture.wrapS = THREE.MirroredRepeatWrapping;
 wallTexture.wrapT = THREE.MirroredRepeatWrapping;
-wallTexture.repeat.x = 2;
+wallTexture.repeat.x = 5;
 wallTexture.repeat.y = 1;
 wallMaterial.map = wallTexture;
 rightWall.rotation.x = Math.PI;
 rightWall.rotation.y = -Math.PI / 2;
 rightWall.rotation.z = -Math.PI;
-rightWall.position.x = 49.8;
+rightWall.position.x = 49.5;
 rightWall.position.y = 50 / 2;
+rightWall.position.z = 50;
 scene.add(rightWall);
 const leftWall = rightWall.clone();
 //console.log(`left wall ${leftWall}`);
 leftWall.rotation.x = Math.PI;
 leftWall.rotation.y = Math.PI / 2;
 leftWall.rotation.z = -Math.PI;
-leftWall.position.x = -49.8;
+leftWall.position.x = -49.5;
 leftWall.position.y = 50 / 2;
 scene.add(leftWall);
 
@@ -239,7 +241,7 @@ frontWall.rotation.y = 0;
 frontWall.rotation.z = 0;
 frontWall.position.x = 0;
 frontWall.position.y = 50 / 2;
-frontWall.position.z = -49.8;
+frontWall.position.z = -74.5;
 scene.add(frontWall);
 // // Object
 // const boxGeometry = new THREE.BoxBufferGeometry(5, 5, 5);
@@ -352,7 +354,7 @@ gltfLoader.load(
   function (gltf) {
     console.log(gltf);
     gltf.scene.scale.set(10, 10, 10);
-    gltf.scene.position.set(0, 0, 50);
+    gltf.scene.position.set(0, 0, 165);
     model = gltf.scene;
     // model.traverse(function (object) {
     //   if (object.isMesh) object.castShadow = true;
@@ -433,7 +435,7 @@ fbxLoader.load(
   "/Player/Idle (1).fbx",
   (object) => {
     object.scale.set(10, 10, 10);
-    object.position.set(10, 0, 50);
+    object.position.set(10, 0, 165);
     //object.rotation.y = Math.PI;
     mixer1 = new THREE.AnimationMixer(object);
     const animationAction = mixer1.clipAction(object.animations[0]);
