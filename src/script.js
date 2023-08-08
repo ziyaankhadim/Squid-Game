@@ -313,6 +313,28 @@ const lineBox = new THREE.Box3(
 
 // Instantiate a loader
 const gltfLoader = new GLTFLoader();
+//TREE
+gltfLoader.load(
+  // resource URL
+  "/tree.glb",
+  // called when the resource is loaded
+  function (gltf) {
+    console.log(gltf);
+    // tree = gltf.scene;
+    gltf.scene.scale.set(0.1, 0.1, 0.1);
+    gltf.scene.position.set(0, 1, -60);
+    scene.add(gltf.scene);
+  },
+  //called while loading is progressing
+  function (xhr) {
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+  },
+  //called when loading has errors
+  function (error) {
+    console.log("An error happened");
+  }
+);
+
 //DOLL
 let doll;
 // Load a glTF resource
