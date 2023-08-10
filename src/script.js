@@ -383,7 +383,7 @@ fbxLoader.load(
   "/Player/Idle (1).fbx",
   (object) => {
     object.scale.set(5, 5, 5);
-    object.position.set(0, 0, 165);
+    object.position.set(0, 0, 160);
     mixer = new THREE.AnimationMixer(object);
     const animationAction = mixer.clipAction(object.animations[0]);
     animationActions.push(animationAction);
@@ -508,7 +508,7 @@ scene.add(light);
 camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
 camera.position.x = 0;
 camera.position.y = 10;
-camera.position.z = 185;
+camera.position.z = 175;
 //camera.lookAt(mesh.position);
 scene.add(camera);
 
@@ -642,8 +642,8 @@ uniforms["sunPosition"].value.copy(sun);
 
 //Restart
 document.querySelector(".restart").addEventListener("click", function () {
-  modelPlayer.position.set(0, 0, 165);
-  camera.position.set(0, 10, 185);
+  modelPlayer.position.set(0, 0, 160);
+  camera.position.set(0, 10, 175);
   won = false;
   lost = false;
   movementSpeed = 0.1;
@@ -664,6 +664,7 @@ let mixerUpdated = false; // Add a flag to track if mixer.update has been called
 let rotationAnglePlayer = Math.PI; // Variable to store the desired rotation angle
 let angle = Math.PI;
 let currentRotationAnglePlayer = Math.PI;
+let xAxis, zAxis;
 
 // Animate
 const tick = () => {
@@ -703,8 +704,10 @@ const tick = () => {
       mixerUpdated = true;
     }
     if (keys.forward && !bothWS && !bothAD) {
-      modelPlayer.position.z -= movementSpeed;
-      camera.position.z -= movementSpeed;
+      if (!(zAxis <= -73)) {
+        zAxis = modelPlayer.position.z -= movementSpeed;
+        camera.position.z -= movementSpeed;
+      }
       if (keys.left) {
         rotationAnglePlayer += angle / -8;
       } else if (keys.right) {
@@ -714,8 +717,10 @@ const tick = () => {
       }
     }
     if (keys.backward && !bothWS && !bothAD) {
-      modelPlayer.position.z += movementSpeed;
-      camera.position.z += movementSpeed;
+      if (!(zAxis >= 160)) {
+        zAxis = modelPlayer.position.z += movementSpeed;
+        camera.position.z += movementSpeed;
+      }
       if (keys.left) {
         rotationAnglePlayer += angle / 4;
       } else if (keys.right) {
@@ -726,15 +731,19 @@ const tick = () => {
     }
     if (keys.left && !bothWS && !bothAD) {
       modelPlayer.rotation.set(0, Math.PI / 2, 0);
-      modelPlayer.position.x -= movementSpeed;
       rotationAnglePlayer += Math.PI / 2;
-      camera.position.x -= movementSpeed;
+      if (!(xAxis <= -48)) {
+        xAxis = modelPlayer.position.x -= movementSpeed;
+        camera.position.x -= movementSpeed;
+      }
     }
     if (keys.right && !bothWS && !bothAD) {
       modelPlayer.rotation.set(0, -Math.PI / 2, 0);
-      modelPlayer.position.x += movementSpeed;
       rotationAnglePlayer -= Math.PI / 2;
-      camera.position.x += movementSpeed;
+      if (!(xAxis >= 48)) {
+        xAxis = modelPlayer.position.x += movementSpeed;
+        camera.position.x += movementSpeed;
+      }
     }
 
     modelPlayer.rotation.set(0, rotationAnglePlayer, 0);
