@@ -360,12 +360,15 @@ gltfLoader.load(
   // called when the resource is loaded
   function (gltf) {
     console.log(gltf);
+    // gltf.scene.traverse((child) => {
+    //   if (child.material) child.material.metalness = 0;
+    // });
     guards = gltf.scene;
     guards.scale.set(7.5, 7.5, 7.5);
-    guards.position.set(20, 0.5, -60);
+    guards.position.set(20, 0.3, -60);
     scene.add(guards);
     guardsClone = guards.clone();
-    guardsClone.position.set(-20, 0.5, -60);
+    guardsClone.position.set(-20, 0.3, -60);
     scene.add(guardsClone);
   },
   //called while loading is progressing
@@ -590,7 +593,6 @@ fbxLoader.load(
                     console.log(error);
                   }
                 );
-                modelReady = true;
               },
               (xhr) => {
                 console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
@@ -635,7 +637,27 @@ const setAction = (toAction) => {
 };
 
 //Lights
-const light = new THREE.AmbientLight(0xffffff); // soft white light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.75); // soft white light
+scene.add(ambientLight);
+
+const pointLightRight = new THREE.PointLight(0xffffbb, 50, 20, 2);
+pointLightRight.position.set(22, 20, -55);
+scene.add(pointLightRight);
+const pointLightLeft = new THREE.PointLight(0xffffbb, 50, 20, 2);
+pointLightLeft.position.set(-18, 20, -55);
+scene.add(pointLightLeft);
+// const sphereSize = 1;
+// const pointLightHelperRight = new THREE.PointLightHelper(pointLightRight, sphereSize);
+// scene.add(pointLightHelperRight);
+// const pointLightHelperLeft = new THREE.PointLightHelper(pointLightLeft, sphereSize);
+// scene.add(pointLightHelperLeft);
+
+const directLight = new THREE.DirectionalLight(0xffffff, 0.75);
+const helper = new THREE.DirectionalLightHelper(directLight, 5);
+directLight.position.set(2, 0.5, 1.5);
+scene.add(directLight);
+
+const light = new THREE.HemisphereLight(0xffffff, 0x080820, 2);
 scene.add(light);
 // Camera
 camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
@@ -647,7 +669,7 @@ scene.add(camera);
 
 //Orbit Controls
 //const controls = new OrbitControls(camera, canvas);
-//ontrols.enable = false;
+//controls.enable = false;
 //controls.enableDamping = true;
 
 /**
@@ -679,6 +701,22 @@ const gui = new dat.GUI({
 //gui.add(mesh.position, "y").min(-3).max(3).step(0.01).name("elevation");
 //gui.add(mesh, "visible");
 //gui.add(floorMaterial, "wireframe");
+// gui.add(ambientLight, "intensity").min(0).max(10).step(0.0001);
+// gui.add(directLight.position, "x").min(-50).max(50).step(0.0001);
+// gui.add(directLight.position, "y").min(-50).max(50).step(0.0001);
+// gui.add(directLight.position, "z").min(-50).max(50).step(0.0001);
+// gui.add(directLight, "intensity").min(0).max(10).step(0.0001);
+// gui.add(pointLight1.position, "x").min(-100).max(100).step(0.0001);
+// gui.add(pointLight1.position, "y").min(-100).max(100).step(0.0001);
+// gui.add(pointLight1.position, "z").min(-100).max(100).step(0.0001);
+// gui.add(pointLight1, "intensity").min(0).max(100).step(0.0001);
+// gui.add(pointLight1, "distance").min(0).max(100).step(0.0001);
+// gui.add(directLight, "intensity").min(0).max(10).step(0.0001);
+// gui.add(pointLight2.position, "x").min(-100).max(100).step(0.0001);
+// gui.add(pointLight2.position, "y").min(-100).max(100).step(0.0001);
+// gui.add(pointLight2.position, "z").min(-100).max(100).step(0.0001);
+// gui.add(pointLight2, "intensity").min(0).max(100).step(0.0001);
+// gui.add(pointLight2, "distance").min(0).max(100).step(0.0001);
 
 // gui.addColor(parameters, "color").onChange(() => {
 //   material.color.set(parameters.color);
@@ -767,8 +805,10 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 // Add Sky
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1;
+//renderer.toneMapping = THREE.ACESFilmicToneMapping;
+//renderer.toneMappingExposure = 0.5;
+renderer.toneMapping = THREE.LinearToneMapping;
+renderer.toneMappingExposure = 0.5;
 let sky, sun;
 sky = new Sky();
 sky.scale.setScalar(10000);
@@ -782,13 +822,13 @@ let mieCoefficient = 0.01;
 let mieDirectionalG = 0.99;
 let elevation = 90 / 4;
 let azimuth = 180 / 3;
-let exposure = renderer.toneMappingExposure;
+//let exposure = renderer.toneMappingExposure;
 const uniforms = sky.material.uniforms;
 uniforms["turbidity"].value = turbidity;
 uniforms["rayleigh"].value = rayleigh;
 uniforms["mieCoefficient"].value = mieCoefficient;
 uniforms["mieDirectionalG"].value = mieDirectionalG;
-renderer.toneMappingExposure = exposure;
+//renderer.toneMappingExposure = exposure;
 
 const phi = THREE.MathUtils.degToRad(90 - elevation);
 const theta = THREE.MathUtils.degToRad(azimuth);
