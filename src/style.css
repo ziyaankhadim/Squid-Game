@@ -6,6 +6,7 @@
 html,
 body {
   overflow: hidden;
+  position: absolute;
 }
 
 .webgl {
@@ -13,4 +14,30 @@ body {
   top: 0;
   left: 0;
   outline: none;
+}
+
+.btn {
+  font-family: "Gloria Hallelujah", cursive;
+  font-size: 1rem;
+  padding: 0.5rem 2rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  border-color: rgb(255, 255, 255);
+  background-color: rgb(14, 14, 26);
+  color: rgb(234, 234, 234);
+  position: relative;
+  margin-bottom: 20px;
+  margin-right: 20px;
+}
+
+.btn:active {
+  scale: 0.92;
+}
+
+.btn:hover {
+  box-shadow: rgb(170, 41, 41) 0px 10px 10px -10px;
+  border-color: rgb(14, 14, 26);
+  background: linear-gradient(rgb(234, 234, 234) 0%, rgb(229, 37, 79));
+  color: rgb(255, 255, 255);
 }

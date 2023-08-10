@@ -1,6 +1,6 @@
 import "./style.css";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/Orbitcontrols.js";
+//import { OrbitControls } from "three/examples/jsm/controls/Orbitcontrols.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { Sky } from "three/examples/jsm/objects/Sky";
@@ -11,7 +11,7 @@ let scene, renderer, camera;
 let mixer;
 let tree;
 let dollFacingBack = false;
-let textureRandom;
+let textureRandom, colorTextureRandom;
 let won = false;
 let lost = false;
 /**
@@ -68,6 +68,7 @@ loadingManager.onError = () => {
  * Textures
  */
 textureRandom = Math.random() * 10 + 1;
+colorTextureRandom = Math.random() * 10 + 2;
 const textureLoader = new THREE.TextureLoader(loadingManager);
 
 //Floor Texture
@@ -100,8 +101,8 @@ floorMaterial.side = THREE.DoubleSide;
 // floorGeometry.computeVertexNormals();
 colorTexture.wrapS = THREE.MirroredRepeatWrapping;
 colorTexture.wrapT = THREE.MirroredRepeatWrapping;
-colorTexture.repeat.x = Math.random() * 10 + 2;
-colorTexture.repeat.y = Math.random() * 10 + 2;
+colorTexture.repeat.x = colorTextureRandom;
+colorTexture.repeat.y = colorTextureRandom;
 colorTexture.offset.x = 0.5;
 colorTexture.offset.y = 0.5;
 colorTexture.rotation = Math.PI * 0.25;
@@ -316,7 +317,7 @@ gltfLoader.load(
   "/doll/scene.gltf",
   // called when the resource is loaded
   function (gltf) {
-    console.log(gltf);
+    //console.log(gltf);
     doll = gltf.scene;
     gltf.scene.scale.set(2, 2, 2);
     gltf.scene.position.set(0, 4.75 * 2, -45);
@@ -520,9 +521,11 @@ scene.add(camera);
  * Debug
  */
 const gui = new dat.GUI({
+  hide: true,
   closed: false,
   width: 400,
 });
+gui.hide();
 
 /**
  * Controls
@@ -636,6 +639,21 @@ const theta = THREE.MathUtils.degToRad(azimuth);
 sun.setFromSphericalCoords(1, phi, theta);
 
 uniforms["sunPosition"].value.copy(sun);
+
+//Restart
+document.querySelector(".restart").addEventListener("click", function () {
+  modelPlayer.position.set(0, 0, 165);
+  camera.position.set(0, 10, 185);
+  won = false;
+  lost = false;
+  movementSpeed = 0.1;
+  mixerUpdated = false;
+  rotationAnglePlayer = Math.PI;
+  angle = Math.PI;
+  currentRotationAnglePlayer = Math.PI;
+  startDoll();
+  //console.log("restart pressed");
+});
 
 //Clock
 const clock = new THREE.Clock();
