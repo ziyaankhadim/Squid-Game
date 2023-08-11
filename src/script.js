@@ -423,7 +423,11 @@ fbxLoader.load(
                     );
                     animationActions.push(animationAction);
                     modelPlayerReady = true;
-                    tick();
+                    if (modelPlayerReady) {
+                      document.querySelector(".parentLoader").style.display =
+                        "none";
+                      tick();
+                    }
                   },
                   (xhr) => {
                     console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
