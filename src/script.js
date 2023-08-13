@@ -422,12 +422,33 @@ fbxLoader.load(
                       object.animations[0]
                     );
                     animationActions.push(animationAction);
-                    modelPlayerReady = true;
-                    if (modelPlayerReady) {
-                      document.querySelector(".parentLoader").style.display =
-                        "none";
-                      tick();
-                    }
+                    fbxLoader.load(
+                      "/Player/staticJump.fbx",
+                      (object) => {
+                        console.log("loaded staticJump");
+                        const animationAction = mixer.clipAction(
+                          object.animations[0]
+                        );
+                        animationActions.push(animationAction);
+                        console.log(animationActions[5]);
+
+                        modelPlayerReady = true;
+                        if (modelPlayerReady) {
+                          document.querySelector(
+                            ".parentLoader"
+                          ).style.display = "none";
+                          tick();
+                        }
+                      },
+                      (xhr) => {
+                        console.log(
+                          (xhr.loaded / xhr.total) * 100 + "% loaded"
+                        );
+                      },
+                      (error) => {
+                        console.log(error);
+                      }
+                    );
                   },
                   (xhr) => {
                     console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
@@ -478,6 +499,13 @@ const setAction = (toAction) => {
     activeAction.play();
   }
 };
+// Check if the player animation is still running
+function isPlayerAnimating(...excludedIndices) {
+  const activeActions = mixer._actions; // Get the array of active actions
+  return activeActions
+    .filter((action, index) => !excludedIndices.includes(index)) // Exclude specified indices
+    .some((action) => action.isRunning()); // Check if any action is running
+}
 
 /**
  * Lights
@@ -601,10 +629,10 @@ function onKeyUp(event) {
       keys.right = false;
       //console.log("Keyup: d");
       break;
-    case " ": // SPACE
-      keys.space = false;
-      //console.log("Keyup: SPACE");
-      break;
+    // case " ": // SPACE
+    //   keys.space = false;
+    //   //console.log("Keyup: SPACE");
+    //   break;
     case "shift":
       keys.shift = false;
       //console.log("Keyup: SHIFT");
@@ -654,6 +682,7 @@ uniforms["sunPosition"].value.copy(sun);
 
 //Restart
 document.querySelector(".restart").addEventListener("click", function () {
+  this.blur();
   modelPlayer.position.set(0, 0, 160);
   camera.position.set(0, 10, 175);
   won = false;
@@ -694,72 +723,92 @@ const tick = () => {
   const isWalking = keys.forward || keys.backward || keys.left || keys.right;
   const bothWS = keys.forward && keys.backward;
   const bothAD = keys.left && keys.right;
+  const jump = keys.space;
   if (!won && !lost) {
-    if (isRunning && !bothWS && !bothAD) {
-      if (!dollFacingBack) {
-        lost = true;
-        console.log("you lose");
-      }
-      setAction(animationActions[2]);
-      movementSpeed = mixerUpdateDelta * 10;
+    if (jump) {
+      // Check if jump animation is playing
+      // const isJumping = animationActions[5].isRunning();
+
+      setAction(animationActions[5]);
+      animationActions[5].setLoop(THREE.LoopOnce);
+      animationActions[5].clampWhenFinished = true;
       mixerUpdated = true;
-    } else if (isWalking && !bothWS && !bothAD) {
-      if (!dollFacingBack) {
-        lost = true;
-        console.log("you lose");
+
+      if (
+        animationActions[5].time === animationActions[5]._clip.duration ||
+        !isPlayerAnimating(0, 5)
+      ) {
+        // Jump animation finished
+        keys.space = false;
       }
-      setAction(animationActions[1]);
-      movementSpeed = mixerUpdateDelta * 5;
-      mixerUpdated = true;
-    } else {
-      setAction(animationActions[0]);
-      rotationAnglePlayer = currentRotationAnglePlayer;
-      mixerUpdated = true;
-    }
-    if (keys.forward && !bothWS && !bothAD) {
-      if (!(zAxis <= -73)) {
-        zAxis = modelPlayer.position.z -= movementSpeed;
-        camera.position.z -= movementSpeed;
-      }
-      if (keys.left) {
-        rotationAnglePlayer += angle / -8;
-      } else if (keys.right) {
-        rotationAnglePlayer += angle / 8;
+    } else if (!jump) {
+      if (isRunning && !bothWS && !bothAD) {
+        if (!dollFacingBack) {
+          lost = true;
+          console.log("you lose");
+        }
+        setAction(animationActions[2]);
+        movementSpeed = mixerUpdateDelta * 10;
+        mixerUpdated = true;
+      } else if (isWalking && !bothWS && !bothAD) {
+        if (!dollFacingBack) {
+          lost = true;
+          console.log("you lose");
+        }
+        setAction(animationActions[1]);
+        movementSpeed = mixerUpdateDelta * 5;
+        mixerUpdated = true;
       } else {
-        rotationAnglePlayer += angle * 2;
+        setAction(animationActions[0]);
+        rotationAnglePlayer = currentRotationAnglePlayer;
+        mixerUpdated = true;
       }
+
+      if (keys.forward && !bothWS && !bothAD) {
+        if (!(zAxis <= -73)) {
+          zAxis = modelPlayer.position.z -= movementSpeed;
+          camera.position.z -= movementSpeed;
+        }
+        if (keys.left) {
+          rotationAnglePlayer += angle / -8;
+        } else if (keys.right) {
+          rotationAnglePlayer += angle / 8;
+        } else {
+          rotationAnglePlayer += angle * 2;
+        }
+      }
+      if (keys.backward && !bothWS && !bothAD) {
+        if (!(zAxis >= 160)) {
+          zAxis = modelPlayer.position.z += movementSpeed;
+          camera.position.z += movementSpeed;
+        }
+        if (keys.left) {
+          rotationAnglePlayer += angle / 4;
+        } else if (keys.right) {
+          rotationAnglePlayer += angle / -4;
+        } else {
+          rotationAnglePlayer += angle;
+        }
+      }
+      if (keys.left && !bothWS && !bothAD) {
+        modelPlayer.rotation.set(0, Math.PI / 2, 0);
+        rotationAnglePlayer += Math.PI / 2;
+        if (!(xAxis <= -48)) {
+          xAxis = modelPlayer.position.x -= movementSpeed;
+          camera.position.x -= movementSpeed;
+        }
+      }
+      if (keys.right && !bothWS && !bothAD) {
+        modelPlayer.rotation.set(0, -Math.PI / 2, 0);
+        rotationAnglePlayer -= Math.PI / 2;
+        if (!(xAxis >= 48)) {
+          xAxis = modelPlayer.position.x += movementSpeed;
+          camera.position.x += movementSpeed;
+        }
+      }
+      modelPlayer.rotation.set(0, rotationAnglePlayer, 0);
+      currentRotationAnglePlayer = rotationAnglePlayer;
     }
-    if (keys.backward && !bothWS && !bothAD) {
-      if (!(zAxis >= 160)) {
-        zAxis = modelPlayer.position.z += movementSpeed;
-        camera.position.z += movementSpeed;
-      }
-      if (keys.left) {
-        rotationAnglePlayer += angle / 4;
-      } else if (keys.right) {
-        rotationAnglePlayer += angle / -4;
-      } else {
-        rotationAnglePlayer += angle;
-      }
-    }
-    if (keys.left && !bothWS && !bothAD) {
-      modelPlayer.rotation.set(0, Math.PI / 2, 0);
-      rotationAnglePlayer += Math.PI / 2;
-      if (!(xAxis <= -48)) {
-        xAxis = modelPlayer.position.x -= movementSpeed;
-        camera.position.x -= movementSpeed;
-      }
-    }
-    if (keys.right && !bothWS && !bothAD) {
-      modelPlayer.rotation.set(0, -Math.PI / 2, 0);
-      rotationAnglePlayer -= Math.PI / 2;
-      if (!(xAxis >= 48)) {
-        xAxis = modelPlayer.position.x += movementSpeed;
-        camera.position.x += movementSpeed;
-      }
-    }
-    modelPlayer.rotation.set(0, rotationAnglePlayer, 0);
-    currentRotationAnglePlayer = rotationAnglePlayer;
   }
   if (lost) {
     setAction(animationActions[4]);
