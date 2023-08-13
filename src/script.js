@@ -676,6 +676,7 @@ const tick = () => {
   //console.log(elapsedTime);
 
   const mixerUpdateDelta = clock.getDelta();
+  //console.log(clock.getDelta());
 
   rotationAnglePlayer = Math.PI; // Reset the rotation angle for each frame
 
@@ -692,7 +693,7 @@ const tick = () => {
         console.log("you lose");
       }
       setAction(animationActions[2]);
-      movementSpeed = 0.2;
+      movementSpeed = mixerUpdateDelta * 10;
       mixerUpdated = true;
     } else if (isWalking && !bothWS && !bothAD) {
       if (!dollFacingBack) {
@@ -700,7 +701,7 @@ const tick = () => {
         console.log("you lose");
       }
       setAction(animationActions[1]);
-      movementSpeed = 0.1;
+      movementSpeed = mixerUpdateDelta * 5;
       mixerUpdated = true;
     } else {
       setAction(animationActions[0]);
@@ -749,7 +750,6 @@ const tick = () => {
         camera.position.x += movementSpeed;
       }
     }
-
     modelPlayer.rotation.set(0, rotationAnglePlayer, 0);
     currentRotationAnglePlayer = rotationAnglePlayer;
   }
