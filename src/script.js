@@ -549,18 +549,22 @@ document.addEventListener("keyup", (event) => onKeyUp(event), false);
 function onKeyDown(event) {
   switch (event.key.toLowerCase()) {
     case "w":
+    case "arrowup":
       keys.forward = true;
       //console.log("Keydown: w");
       break;
     case "a":
+    case "arrowleft":
       keys.left = true;
       //console.log("Keydown: a");
       break;
     case "s":
+    case "arrowdown":
       keys.backward = true;
       //console.log("Keydown: s");
       break;
     case "d":
+    case "arrowright":
       keys.right = true;
       //console.log("Keydown: d");
       break;
@@ -578,18 +582,22 @@ function onKeyDown(event) {
 function onKeyUp(event) {
   switch (event.key.toLowerCase()) {
     case "w":
+    case "arrowup":
       keys.forward = false;
       //console.log("Keyup: w");
       break;
     case "a":
+    case "arrowleft":
       keys.left = false;
       //console.log("Keyup: a");
       break;
     case "s":
+    case "arrowdown":
       keys.backward = false;
       //console.log("Keyup: s");
       break;
     case "d":
+    case "arrowright":
       keys.right = false;
       //console.log("Keyup: d");
       break;
