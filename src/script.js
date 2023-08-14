@@ -359,16 +359,16 @@ async function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 async function startDoll() {
-  lookForward();
-  await delay(Math.random() * 1500 + 750);
-  //console.log(dollFacingBack);
+  if (!won && !lost) {
+    lookForward();
+    await delay(Math.random() * 1500 + 750);
+    //console.log(dollFacingBack);
+  }
   lookBackward();
   await delay(Math.random() * 3000 + 1500);
   //console.log(dollFacingBack);
 
-  if (!won && !lost) {
-    startDoll();
-  }
+  startDoll();
 }
 
 //Player
@@ -739,7 +739,7 @@ document.querySelector(".restart").addEventListener("click", function () {
   rotationAnglePlayer = Math.PI;
   angle = Math.PI;
   currentRotationAnglePlayer = Math.PI;
-  startDoll();
+  //startDoll();
   //console.log("restart pressed");
 });
 
