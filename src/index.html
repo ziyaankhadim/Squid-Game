@@ -3,11 +3,50 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.cdnfonts.com/css/game-of-squids" rel="stylesheet">
     <title>Squid Game</title>
   </head>
   <body>
     <canvas class="webgl"></canvas>
     <button class="restart btn">Restart</button>
+    <div class="dialogueBox">
+      <div class="squidParent">
+        <div class="container">
+              <h1 id="squid">Squid&nbspGame</h1>
+          <!-- <h1 id="game"> <center><b>0{}</b></center></h1> -->
+        </div>
+          <div class="parentRedGreen">
+              <div  class="red"> <h3>Red Light  </h3></div>
+              <div class="green"> <h>Green Light  </h3></div>
+          </div>
+  
+      <h3>Instructions:</h3>
+  
+      <p><br>WELCOME...<br>
+          You are a contestant in the deadly game of <br>
+          <b>Red Light Green Light</b> <br>
+          When Doll facing <b>BACKWARD</b>, you are free to move towards the finish line.<br>
+          <!-- When Doll facing <b>FORWARD</b>, you must stop immediately. <br> -->
+          Any movement detected when Doll facing <b>FORWARD</b>  will result in <b>ELIMINATION</b>.<br>
+          The challenge is to reach the finish line without getting caught.<br>
+          The game continues until either a winner reaches the finish line or player is <b>ELIMINATED</b>.
+      </p>
+      
+      <div>
+         <h3>CONTROLS: </h3>
+         <p>To move FORWARD press <b>W</b> or <b>Up Arrow</b> key <br>
+          To move BACKWARD press <b>S</b> or <b>Down Arrow</b> key<br>
+          To move LEFT press <b>A</b> or <b>Left Arrow</b> key<br>
+          To move RIGHT press <b>D</b> or <b>Right Arrow</b> key<br>
+          To JUMP press <b>Space</b> <br>
+         </p>
+      </div>
+      
+      <div class="text-center">
+          <button class="playButton"style="verticalalign:middle"><span>Play</span></button>
+      </div>
+      </div>
+  </div>
     <div class="parentLoader">
       <div class="loader">
         <svg viewBox="0 0 80 80">

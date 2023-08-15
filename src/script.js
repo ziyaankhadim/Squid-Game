@@ -14,6 +14,15 @@ let dollFacingBack = false;
 let textureRandom, colorTextureRandom;
 let won = false;
 let lost = false;
+let start =false;
+
+//Play Button
+document.querySelector(".playButton").addEventListener("click", function () {
+  this.blur();
+  start = true;
+  document.querySelector(".dialogueBox").style.display = "none";
+  // console.log("Play pressed");
+});
 /**
  * Base
  */
@@ -612,6 +621,7 @@ document.addEventListener("keydown", (event) => onKeyDown(event), false);
 document.addEventListener("keyup", (event) => onKeyUp(event), false);
 
 function onKeyDown(event) {
+  if(start){
   switch (event.key.toLowerCase()) {
     case "w":
     case "arrowup":
@@ -643,9 +653,10 @@ function onKeyDown(event) {
       break;
   }
 }
+}
 
 function onKeyUp(event) {
-  if (!inLowJump && !inHighJump) {
+  if (start && !inLowJump && !inHighJump) {
     switch (event.key.toLowerCase()) {
       case "w":
       case "arrowup":

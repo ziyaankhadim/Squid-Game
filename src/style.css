@@ -1,7 +1,12 @@
+/* @font-face {
+  font-family: "gameforfont";
+  src: url("/src/Game\ Of\ Squids.ttf");
+} */
+@import url("https://fonts.cdnfonts.com/css/game-of-squids");
 * {
   margin: 0;
   padding: 0;
-  background-color: black;
+  /* background-color: black; */
 }
 
 html,
@@ -9,6 +14,7 @@ body {
   overflow: hidden;
   /* position: absolute; */
   height: 100%;
+  background-color: black;
 }
 
 .webgl {
@@ -40,7 +46,7 @@ body {
 .btn:hover {
   box-shadow: rgb(170, 41, 41) 0px 10px 10px -10px;
   border-color: rgb(14, 14, 26);
-  background: linear-gradient(rgb(234, 234, 234) 0%, rgb(229, 37, 79));
+  background: linear-gradient(270deg, rgb(234, 234, 234) 0%, rgb(229, 37, 79));
   color: rgb(255, 255, 255);
 }
 
@@ -121,6 +127,125 @@ body {
   transform: translate(-10px, -18px);
   animation: dotTriangle var(--duration) cubic-bezier(0.785, 0.135, 0.15, 0.86)
     infinite;
+}
+
+.dialogueBox {
+  box-sizing: border-box;
+  border-radius: 15px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* margin-top: 5vh;
+  margin-bottom: 5vh; */
+  margin-left: 37vw;
+  font-size: 2vh;
+  width: 25vw;
+}
+
+p {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 1.75vh;
+}
+h1 {
+  padding-right: 13vh;
+  margin: 2.4vh;
+  font-family: "Game Of Squids";
+  box-sizing: border-box;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+}
+h3 {
+  font-family: "Game Of Squids";
+  margin-top: 1vh;
+  /* margin-bottom: 1vh; */
+}
+#squid {
+  color: white;
+  padding-left: 1vw;
+  /* padding-right: 10vw; */
+  background: linear-gradient(-90deg, rgb(229, 37, 79), rgb(0, 0, 0));
+  /* text-align: center; */
+}
+
+#game {
+  padding-left: 2vw;
+  margin-left: 10vw;
+  background: linear-gradient(
+    -90deg,
+    rgba(255, 255, 255, 0.5),
+    rgb(229, 37, 79)
+  );
+}
+b {
+  font-family: "Game Of Squids";
+}
+.red {
+  color: #c71010;
+  display: grid;
+  justify-content: center;
+  font-family: "Game Of Squids";
+}
+.green {
+  color: #00f600c9;
+  display: grid;
+  justify-content: center;
+  font-family: "Game Of Squids";
+}
+.squidParent {
+  background-color: #808080;
+  padding: 1vw;
+  box-sizing: border-box;
+  border-radius: 15px;
+  
+}
+.text-center {
+  text-align: center;
+}
+
+.playButton {
+  display: inline-block;
+  border-radius: 7px;
+  border: none;
+  background: #00f600c9;
+  color: white;
+  font-family: gameforfont;
+  text-align: center;
+  font-size: 1.3vh;
+  box-shadow: 0px 1.4vh 5.6vh -1.1vh #29da56;
+  width: 11em;
+  padding: 1em;
+  transition: all 0.4s;
+  cursor: pointer;
+}
+
+.playButton span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.4s;
+}
+
+.playButton span:after {
+  content: "for free";
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -2vw;
+  transition: 0.5s;
+}
+.playButton:active {
+  scale: 0.95;
+}
+.playButton:hover span {
+  padding-right: 6.5em;
+}
+
+.playButton:hover span:after {
+  opacity: 4;
+  right: 0;
 }
 
 @keyframes pathTriangle {
