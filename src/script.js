@@ -15,6 +15,28 @@ let textureRandom, colorTextureRandom;
 let won = false;
 let lost = false;
 let start =false;
+let blur = false;
+window.addEventListener('blur', function () {
+  blur = true;
+  redLightMusic.pause();
+  greenLightMusic.pause();
+  if (introMusic.isPlaying) {
+    introMusic.pause();
+  }
+  if(bgMusic.isPlaying){
+    bgMusic.pause();
+  }
+  console.log('blur')
+})
+
+window.addEventListener("focus", function() {
+  blur =false;
+  if(!start){
+  introMusic.play();
+  }
+  else{bgMusic.play();}
+  console.log("focus");
+})
 
 //Play Button
 document.querySelector(".playButton").addEventListener("click", function () {
@@ -352,7 +374,7 @@ function lookBackward() {
     // Check if the 3D model has finished loading
     gsap.to(doll.rotation, { duration: 0.75, y: -3.15 });
     setTimeout(() => (dollFacingBack = true), 150);
-    if(start && !lost && !won){
+    if(start && !lost && !won && !blur){
       greenLightMusic.play();
     }
     // } else {
@@ -365,7 +387,7 @@ function lookForward() {
     // Check if the 3D model has finished loading
     gsap.to(doll.rotation, { duration: 0.75, y: 0 });
     setTimeout(() => (dollFacingBack = false), 450);
-    if(start && !lost && !won){
+    if(start && !lost && !won && !blur){
      redLightMusic.play();
     }
     // } else {
