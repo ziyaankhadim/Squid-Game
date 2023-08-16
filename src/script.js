@@ -20,6 +20,8 @@ let start =false;
 document.querySelector(".playButton").addEventListener("click", function () {
   this.blur();
   start = true;
+  introMusic.stop();
+  bgMusic.play();
   document.querySelector(".dialogueBox").style.display = "none";
   // console.log("Play pressed");
 });
@@ -348,8 +350,11 @@ gltfLoader.load(
 function lookBackward() {
   if (doll) {
     // Check if the 3D model has finished loading
-    gsap.to(doll.rotation, { duration: 0.5, y: -3.15 });
+    gsap.to(doll.rotation, { duration: 0.75, y: -3.15 });
     setTimeout(() => (dollFacingBack = true), 150);
+    if(start && !lost && !won){
+      greenLightMusic.play();
+    }
     // } else {
     //   console.warn('Doll model not loaded yet!');
   }
@@ -358,8 +363,11 @@ function lookBackward() {
 function lookForward() {
   if (doll) {
     // Check if the 3D model has finished loading
-    gsap.to(doll.rotation, { duration: 0.5, y: 0 });
+    gsap.to(doll.rotation, { duration: 0.75, y: 0 });
     setTimeout(() => (dollFacingBack = false), 450);
+    if(start && !lost && !won){
+     redLightMusic.play();
+    }
     // } else {
     //   console.warn('Doll model not loaded yet!');
   }
@@ -590,6 +598,73 @@ camera.position.z = 175;
 //camera.lookAt(mesh.position);
 scene.add(camera);
 
+//Audio
+let  bangPlayed = false;
+let eliminatedPlayed = false;
+let winPlayed = false;
+// create an AudioListener and add it to the camera
+const listener = new THREE.AudioListener();
+camera.add( listener);
+// create a global audio source
+// load a sound and set it as the Audio object's buffer
+const audioLoader = new THREE.AudioLoader();
+
+// const introMusic = new Audio("/Audio/intro.mp3");
+const introMusic = new THREE.Audio( listener );
+audioLoader.load( '/Audio/intro.mp3', function( buffer ) {
+  introMusic.setBuffer( buffer );
+	// sound.setLoop( true );
+	introMusic.setVolume( 0.1 );
+	introMusic.play();
+});
+
+const bgMusic = new THREE.Audio(listener);
+audioLoader.load( '/Audio/music_bg.mp3', function( buffer ) {
+  bgMusic.setBuffer( buffer );
+	bgMusic.setLoop( true );
+	bgMusic.setVolume( 0.01 );
+});
+
+const winMusic = new THREE.Audio(listener);
+audioLoader.load( "/Audio/win.mp3", function( buffer ) {
+  winMusic.setBuffer( buffer );
+	// sound.setLoop( true );
+	winMusic.setVolume( 0.1 );
+	// winMusic.play();
+});
+
+const bangMusic = new THREE.Audio(listener);
+audioLoader.load( "/Audio/bang.mp3", function( buffer ) {
+  bangMusic.setBuffer( buffer );
+	// bangMusic.setLoop( true );
+	bangMusic.setVolume( 1 );
+	// bangMusic.play();
+});
+
+const eliminatedMusic = new THREE.Audio(listener);
+audioLoader.load( "/Audio/eliminated.mp3", function( buffer ) {
+  eliminatedMusic.setBuffer( buffer );
+	// eliminatedMusic.setLoop( true );
+	eliminatedMusic.setVolume( 0.5 );
+	// eliminatedMusic.play();
+});
+
+const greenLightMusic = new THREE.Audio(listener);
+audioLoader.load( "/Audio/greenLight.mp3", function( buffer ) {
+  greenLightMusic.setBuffer( buffer );
+	// greenLightMusic.setLoop( true );
+	greenLightMusic.setVolume( 0.25 );
+	// greenLightMusic.play();
+});
+
+const redLightMusic = new THREE.Audio(listener);
+audioLoader.load( "/Audio/redLightTrim.mp3", function( buffer ) {
+  redLightMusic.setBuffer( buffer );
+	// redLightMusic.setLoop( true );
+	redLightMusic.setVolume( 0.25 );
+	// redLightMusic.play();
+});
+
 //Orbit Controls
 //const controls = new OrbitControls(camera, canvas);
 //controls.enable = false;
@@ -750,6 +825,12 @@ document.querySelector(".restart").addEventListener("click", function () {
   rotationAnglePlayer = Math.PI;
   angle = Math.PI;
   currentRotationAnglePlayer = Math.PI;
+  bangPlayed = false;
+  eliminatedPlayed = false;
+  winPlayed = false;
+  if(!bgMusic.isPlaying){
+    bgMusic.play();
+  }
   //startDoll();
   //console.log("restart pressed");
 });
@@ -973,6 +1054,14 @@ const tick = () => {
     animationActions[4].clampWhenFinished = true;
     animationActions[4].enable = true;
     mixerUpdated = true;
+    if(!bangPlayed){
+      bgMusic.stop();
+      bangMusic.play();
+       bangPlayed = true;
+    }else if(!eliminatedPlayed && !bangMusic.isPlaying){
+      eliminatedMusic.play();
+      eliminatedPlayed = true
+    }
   }
   if (won) {
     setAction(animationActions[3]);
@@ -981,6 +1070,11 @@ const tick = () => {
     animationActions[3].clampWhenFinished = true;
     animationActions[3].enable = true;
     mixerUpdated = true;
+    if(!winPlayed){
+      bgMusic.stop();
+      winMusic.play();
+      winPlayed = true;
+    }
   }
   if (mixerUpdated) {
     mixer.update(mixerUpdateDelta);
