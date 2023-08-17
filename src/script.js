@@ -45,8 +45,8 @@ document.querySelector(".playButton").addEventListener("click", function () {
   start = true;
   if(modelPlayerReady){
     introMusic.stop();
+    bgMusic.play();
   }
-  bgMusic.play();
   document.querySelector(".dialogueBox").style.display = "none";
   // console.log("Play pressed");
 });
@@ -507,6 +507,7 @@ fbxLoader.load(
                                   tick();
                                   if(start){
                                     introMusic.stop();
+                                    bgMusic.play();
                                   }
                                 }
                               },
