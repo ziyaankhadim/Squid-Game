@@ -37,6 +37,7 @@ body {
   position: relative;
   margin-bottom: 20px;
   margin-right: 20px;
+  display: none;
 }
 
 .btn:active {
@@ -136,8 +137,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* margin-top: 5vh;
-  margin-bottom: 5vh; */
+  margin-top: 7vh;
+  /* margin-bottom: 5vh;  */
   margin-left: 37vw;
   font-size: 2vh;
   width: 25vw;

@@ -504,6 +504,13 @@ fbxLoader.load(
                                   document.querySelector(
                                     ".parentLoader"
                                   ).style.display = "none";
+                                  document.querySelector(
+                                    ".btn"
+                                  ).style.display = "inline-block";
+                                  document.querySelector(
+                                    ".dialogueBox"
+                                  ).style.marginTop = 0;
+
                                   tick();
                                   if(start){
                                     introMusic.stop();
