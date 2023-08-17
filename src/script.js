@@ -265,18 +265,26 @@ backWall.position.z = 174.5;
 scene.add(backWall);
 
 // Line
-const lineStart = new THREE.Vector3(-50, 0.2, -40);
-const lineEnd = new THREE.Vector3(50, 0.2, -40);
+const lineStart = new THREE.Vector3(-50, 0.2, -30);
+const lineEnd = new THREE.Vector3(50, 0.2, -30);
 const lineGeometry = new THREE.BufferGeometry().setFromPoints([
   lineStart,
   lineEnd,
 ]);
 const lineMaterial = new THREE.LineBasicMaterial({
-  color: 0xff0000,
+  // color: 0xff0000,
   //linewidth: 10,
 });
 const line = new THREE.Line(lineGeometry, lineMaterial);
-scene.add(line);
+// scene.add(line);
+
+const redLineGeometry = new THREE.PlaneBufferGeometry(2.5, 100, 100, 100);
+const redLineMaterial = new THREE.MeshStandardMaterial({color: 0xff0000});
+const redLine = new THREE.Mesh(redLineGeometry, redLineMaterial);
+redLineMaterial.side = THREE.DoubleSide;
+redLine.rotation.set(-Math.PI/2,0,Math.PI/2)
+redLine.position.set(0,0.2,-30)
+scene.add(redLine)
 
 // Raycaster
 const raycaster = new THREE.Raycaster();
