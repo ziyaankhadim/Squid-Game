@@ -43,7 +43,9 @@ window.addEventListener("focus", function() {
 document.querySelector(".playButton").addEventListener("click", function () {
   this.blur();
   start = true;
-  introMusic.stop();
+  if(modelPlayerReady){
+    introMusic.stop();
+  }
   bgMusic.play();
   document.querySelector(".dialogueBox").style.display = "none";
   // console.log("Play pressed");
@@ -503,6 +505,9 @@ fbxLoader.load(
                                     ".parentLoader"
                                   ).style.display = "none";
                                   tick();
+                                  if(start){
+                                    introMusic.stop();
+                                  }
                                 }
                               },
                               (xhr) => {
