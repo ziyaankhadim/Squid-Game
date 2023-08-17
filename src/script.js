@@ -13,6 +13,7 @@ let tree;
 let dollFacingBack = false;
 let textureRandom, colorTextureRandom;
 let won = false;
+let wonPlayed = false;
 let lost = false;
 let start =false;
 let blur = false;
@@ -374,7 +375,7 @@ function lookBackward() {
     // Check if the 3D model has finished loading
     gsap.to(doll.rotation, { duration: 0.75, y: -3.15 });
     setTimeout(() => (dollFacingBack = true), 150);
-    if(start && !lost && !won && !blur){
+    if(start && !lost && !won && !blur && !wonPlayed){
       greenLightMusic.play();
     }
     // } else {
@@ -387,7 +388,7 @@ function lookForward() {
     // Check if the 3D model has finished loading
     gsap.to(doll.rotation, { duration: 0.75, y: 0 });
     setTimeout(() => (dollFacingBack = false), 450);
-    if(start && !lost && !won && !blur){
+    if(start && !lost && !won && !blur && !wonPlayed){
      redLightMusic.play();
     }
     // } else {
@@ -398,7 +399,7 @@ async function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 async function startDoll() {
-  if (!won && !lost) {
+  if (!won && !lost && !wonPlayed) {
     lookForward();
     await delay(Math.random() * 1500 + 750);
     //console.log(dollFacingBack);
@@ -832,7 +833,8 @@ document.querySelector(".restart").addEventListener("click", function () {
   this.blur();
   modelPlayer.position.set(0, 0, 160);
   camera.position.set(0, 10, 175);
-  won = false;
+  // won = false;
+  wonPlayed = false
   lost = false;
   inLowJump = false;
   inHighJump = false;
@@ -956,10 +958,16 @@ const tick = () => {
         setAction(animationActions[1]);
         movementSpeed = mixerUpdateDelta * 5;
         mixerUpdated = true;
-      } else {
+      } else { 
+        if(wonPlayed){
+        setAction(animationActions[3]);
+        rotationAnglePlayer = currentRotationAnglePlayer;
+        mixerUpdated = true;
+        }else{
         setAction(animationActions[0]);
         rotationAnglePlayer = currentRotationAnglePlayer;
         mixerUpdated = true;
+        }
       }
 
       if (keys.forward && !bothWS && !bothAD) {
@@ -1086,12 +1094,14 @@ const tick = () => {
     }
   }
   if (won) {
-    setAction(animationActions[3]);
-    //animationActions[4].reset();
-    animationActions[3].setLoop(THREE.LoopOnce);
-    animationActions[3].clampWhenFinished = true;
-    animationActions[3].enable = true;
-    mixerUpdated = true;
+    // setAction(animationActions[3]);
+    // //animationActions[4].reset();
+    // animationActions[3].setLoop(THREE.LoopOnce);
+    // animationActions[3].clampWhenFinished = true;
+    // animationActions[3].enable = true;
+    // mixerUpdated = true;
+    won = false;
+    wonPlayed = true;
     if(!winPlayed){
       bgMusic.stop();
       winMusic.play();
@@ -1109,7 +1119,7 @@ const tick = () => {
   const intersects = raycaster.intersectObject(line);
   //console.log(intersects);
 
-  if (intersects.length > 0 && !won) {
+  if (intersects.length > 0 && !won && !wonPlayed) {
     won = true;
     modelPlayer.rotation.set(0, 0, 0);
     console.log("You Win");
