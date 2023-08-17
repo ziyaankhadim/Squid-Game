@@ -383,7 +383,7 @@ function lookBackward() {
     // Check if the 3D model has finished loading
     gsap.to(doll.rotation, { duration: 0.75, y: -3.15 });
     setTimeout(() => (dollFacingBack = true), 150);
-    if(start && !lost && !won && !blur && !wonPlayed){
+    if(start && !lost && !won && !blur && !wonPlayed && modelPlayerReady){
       greenLightMusic.play();
     }
     // } else {
@@ -396,7 +396,7 @@ function lookForward() {
     // Check if the 3D model has finished loading
     gsap.to(doll.rotation, { duration: 0.75, y: 0 });
     setTimeout(() => (dollFacingBack = false), 450);
-    if(start && !lost && !won && !blur && !wonPlayed){
+    if(start && !lost && !won && !blur && !wonPlayed && modelPlayerReady){
      redLightMusic.play();
     }
     // } else {
