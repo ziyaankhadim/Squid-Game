@@ -46,7 +46,7 @@ body {
 .btn:hover {
   box-shadow: rgb(170, 41, 41) 0px 10px 10px -10px;
   border-color: rgb(14, 14, 26);
-  background: linear-gradient(270deg, rgb(234, 234, 234) 0%, rgb(229, 37, 79));
+  background: linear-gradient(270deg, #ff4d79e6 0%, #ff0040e6);
   color: rgb(255, 255, 255);
 }
 
@@ -166,11 +166,11 @@ h3 {
   color: white;
   padding-left: 1vw;
   /* padding-right: 10vw; */
-  background: linear-gradient(-90deg, rgb(229, 37, 79), rgb(0, 0, 0));
+  background: linear-gradient(-90deg, #ff4d79e6, #ff0040e6);
   /* text-align: center; */
 }
 
-#game {
+/* #game {
   padding-left: 2vw;
   margin-left: 10vw;
   background: linear-gradient(
@@ -178,7 +178,7 @@ h3 {
     rgba(255, 255, 255, 0.5),
     rgb(229, 37, 79)
   );
-}
+} */
 b {
   font-family: "Game Of Squids";
 }
@@ -209,7 +209,7 @@ b {
   display: inline-block;
   border-radius: 7px;
   border: none;
-  background: #00f600c9;
+  background: hsla(120, 100%, 48%, 0.692);
   color: white;
   font-family: gameforfont;
   text-align: center;
