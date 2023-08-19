@@ -1,8 +1,7 @@
-/* @font-face {
-  font-family: "gameforfont";
-  src: url("/src/Game\ Of\ Squids.ttf");
-} */
-@import url("https://fonts.cdnfonts.com/css/game-of-squids");
+@font-face {
+  font-family: "Game Of Squids";
+  src: url("/static/fonts/Game\ Of\ Squids.ttf");
+}
 * {
   margin: 0;
   padding: 0;

@@ -79,6 +79,11 @@ module.exports = {
                         options:
                         {
                             outputPath: 'assets/fonts/'
+                        },
+                        loader: 'url-loader',
+                        options:
+                        {
+                            outputPath: 'assets/fonts/'
                         }
                     }
                 ]
