@@ -504,13 +504,6 @@ fbxLoader.load(
                                   document.querySelector(
                                     ".parentLoader"
                                   ).style.display = "none";
-                                  document.querySelector(
-                                    ".btn"
-                                  ).style.display = "inline-block";
-                                  document.querySelector(
-                                    ".dialogueBox"
-                                  ).style.marginTop = 0;
-
                                   tick();
                                   if(start){
                                     introMusic.stop();
@@ -876,6 +869,9 @@ document.querySelector(".restart").addEventListener("click", function () {
   if(!bgMusic.isPlaying){
     bgMusic.play();
   }
+  document.querySelector(
+    ".btn"
+  ).style.display = "none";
   //startDoll();
   //console.log("restart pressed");
 });
@@ -1110,6 +1106,9 @@ const tick = () => {
       bangMusic.play();
        bangPlayed = true;
     }else if(!eliminatedPlayed && !bangMusic.isPlaying){
+      document.querySelector(
+        ".btn"
+      ).style.display = "inline-block";
       eliminatedMusic.play();
       eliminatedPlayed = true
     }
@@ -1121,6 +1120,9 @@ const tick = () => {
     // animationActions[3].clampWhenFinished = true;
     // animationActions[3].enable = true;
     // mixerUpdated = true;
+    document.querySelector(
+      ".btn"
+    ).style.display = "inline-block";
     won = false;
     wonPlayed = true;
     if(!winPlayed){
