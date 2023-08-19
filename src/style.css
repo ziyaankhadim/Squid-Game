@@ -148,7 +148,7 @@ p {
   font-size: 1.75vh;
 }
 h1 {
-  padding-right: 13vh;
+  /* padding-right: 13vh; */
   margin: 2.4vh;
   font-family: "Game Of Squids";
   box-sizing: border-box;
@@ -164,8 +164,8 @@ h3 {
 }
 #squid {
   color: white;
-  padding-left: 1vw;
-  /* padding-right: 10vw; */
+  /* padding-left: 0vw;
+  padding-right: 0vw; */
   background: linear-gradient(-90deg, #ff4d79e6, #ff0040e6);
   /* text-align: center; */
 }
@@ -215,7 +215,7 @@ b {
   text-align: center;
   font-size: 1.3vh;
   box-shadow: 0px 1.4vh 5.6vh -1.1vh #29da56;
-  width: 11em;
+  width: 10em;
   padding: 1em;
   transition: all 0.4s;
   cursor: pointer;
@@ -229,7 +229,7 @@ b {
 }
 
 .playButton span:after {
-  content: "for free";
+  content: "for Free";
   position: absolute;
   opacity: 0;
   top: 0;
@@ -240,7 +240,7 @@ b {
   scale: 0.95;
 }
 .playButton:hover span {
-  padding-right: 6.5em;
+  padding-right: 3.5em;
 }
 
 .playButton:hover span:after {
@@ -333,4 +333,11 @@ b {
 .loader {
   display: inline-block;
   margin: 0 16px;
+}
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .dialogueBox {
+    width: 90vw;
+    margin-left: 5vw;
+  }
 }
