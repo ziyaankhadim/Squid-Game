@@ -6,7 +6,7 @@ but freeze in place during the **Red Light** phase. If they're caught moving dur
 
 ## GamePlay Preview
 
-<img src="/Preview/squidGameStart.png" alt="Squid Game Start" width="500"> <img src="/Preview/squidGameStand.png" alt="Squid Game Standing Player" width="500"> <img src="/Preview/squidGameWin.png" alt="Squid Game Player Won" width="500"> <img src="/Preview/squidGameLost.png" alt="Squid Game Player Lost" width="500">
+<img src="/Preview/squidGameStart.png" alt="Squid Game Start" width="350"> <img src="/Preview/squidGameStand.png" alt="Squid Game Standing Player" width="350"> <img src="/Preview/squidGameWin.png" alt="Squid Game Player Won" width="350"> <img src="/Preview/squidGameLost.png" alt="Squid Game Player Lost" width="350">
 
 ## Play Online
 
